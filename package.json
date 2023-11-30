@@ -1,0 +1,27 @@
+{
+  "name": "iec104",
+  "version": "1.0.0",
+  "description": "IEC-60870-5-104 Packet Analyzer",
+  "main": "app.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TscCai/Iec104.js.git"
+  },
+  "keywords": [
+    "IEC-60870-5-104",
+    "Packet",
+    "Analyzer"
+  ],
+  "author": "Tsccai",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TscCai/Iec104.js/issues"
+  },
+  "homepage": "https://github.com/TscCai/Iec104.js#readme"
+}

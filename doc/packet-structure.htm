@@ -1,0 +1,1149 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+
+<head xmlns:forms="http://www.schema.de/2010/ST4/Layout/MarkupLanguage/Forms">
+    <meta http-equiv="Content-Script-Type" content="text/javascript">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="baseid" content="984444939">
+    <meta name="releaseid" content="984444939">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link layout-comment="Pfad-Trafo: concat('../', $source)" rel="stylesheet"
+        href="https://infosys.beckhoff.com/assets/css/base/01-bootstrap.min.css">
+    <link layout-comment="Pfad-TRAfo: ctrl:If(@class='MultiLangRoot', $source, concat('../', $source))" rel="stylesheet"
+        href="https://infosys.beckhoff.com/assets/css/formats.css">
+    <link layout-comment="Pfad-Trafo: ctrl:If(@class='MultiLangRoot', $source, concat('../', $source))" rel="stylesheet"
+        href="https://infosys.beckhoff.com/assets/css/formats.css">
+    <link layout-comment="Pfad-Trfo: ctrl:If(@class='MultiLangRoot', $source, concat('../', $source))" rel="stylesheet"
+        href="https://infosys.beckhoff.com/assets/css/formats.css">
+    <title>IEC 60870-5-104 telegram structure</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Language" content="en">
+    <meta name="date" content="638229024000000000">
+    <meta name="generator" content="onlineInfoSysConverter">
+    <meta name="Robots" content="index, follow">
+    <script src="https://infosys.beckhoff.com/includes/styles.js" type="text/javascript" language="JavaScript"></script>
+    <meta name="parent" content="984443403">
+    <meta name="level" content="7">
+    <meta name="product" content="TF6xxx - Connectivity">
+    <meta name="category" content="TFxxxx | TwinCAT 3 Functions">
+    <meta name="productgroup" content="TwinCAT 3">
+    <meta name="microsoft_help" content="60870-5-104, telegram">
+    <meta name="topicid" content="984444939">
+    <meta name="primaryid" content="6858453402777673110">
+</head>
+
+<body id="984444939" lang="en-US" xmlns:forms="http://www.schema.de/2010/ST4/Layout/MarkupLanguage/Forms"
+    data-node-id="984444939" class="" data-culture="en-US">
+    <header class="d-print-none">
+        <ol class="breadcrumb ">
+            <li><a href="index.html">TF6500 | TwinCAT 3 IEC 60870-5-10x</a></li>
+            <li></li>
+            <li></li>
+        </ol>
+    </header>
+    <article role="main" aria-labelledby="heading-984444939">
+        <h1 class="heading" style="color:black;">IEC 60870-5-104 telegram structure</h1>
+        <p>APCI = Application Protocol Control Information</p>
+        <p>ASDU = Application Service Data Unit</p>
+        <p>APDU = Application Protocol Data Unit</p>
+        <div class="textmodule" id="985942411">
+            <h2 class="subheading">Telegram format with variable length</h2>
+            <p>This frame type is used to transmit user data between controlling and controlled station</p>
+            <table class="table tabletype-framed table-scaled">
+                <colgroup>
+                    <col style="width: 1.23cm;">
+                    <col style="width: 1.23cm;">
+                    <col style="width: 1.23cm;">
+                    <col style="width: 1.23cm;">
+                    <col style="width: 1.23cm;">
+                    <col style="width: 1.23cm;">
+                    <col style="width: 1.23cm;">
+                    <col style="width: 1.23cm;">
+                    <col style="width: 1.23cm;">
+                    <col style="width: 1.23cm;">
+                    <col style="width: 1.23cm;">
+                    <col style="width: 1.23cm;">
+                    <col style="width: 1.23cm;">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td>
+                            <p class="text-center">byte\bit</p>
+                        </td>
+                        <td>
+                            <p class="text-center">7</p>
+                        </td>
+                        <td>
+                            <p class="text-center">6</p>
+                        </td>
+                        <td>
+                            <p class="text-center">5</p>
+                        </td>
+                        <td>
+                            <p class="text-center">4</p>
+                        </td>
+                        <td>
+                            <p class="text-center">3</p>
+                        </td>
+                        <td>
+                            <p class="text-center">2</p>
+                        </td>
+                        <td>
+                            <p class="text-center">1</p>
+                        </td>
+                        <td>
+                            <p class="text-center">0</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">0</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">Start byte (0x68)</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                        <td rowspan="6">
+                            <p class="text-center">APCI</p>
+                        </td>
+                        <td rowspan="6">
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                        <td rowspan="21">
+                            <p class="text-center">APDU</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">1</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">Length of the APDU (max. 253)</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">2</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">Control field 1</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">3</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">Control field 2</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">4</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">Control field 3</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">5</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">Control field 4</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">6</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center"><a href="https://infosys.beckhoff.com/content/1033/tf6500_tc3_iec60870_5_10x/983819915.html">Type identification</a> </p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                        <td rowspan="15">
+                            <p class="text-center">ASDU</p>
+                        </td>
+                        <td rowspan="15">
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">7</p>
+                        </td>
+                        <td>
+                            <p class="text-center">SQ</p>
+                        </td>
+                        <td colspan="7">
+                            <p class="text-center">Number of objects</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">8</p>
+                        </td>
+                        <td>
+                            <p class="text-center">T</p>
+                        </td>
+                        <td>
+                            <p class="text-center">P/N</p>
+                        </td>
+                        <td colspan="6">
+                            <p class="text-center"><a href="https://infosys.beckhoff.com/content/1033/tf6500_tc3_iec60870_5_10x/983848075.html">Cause of transmission (COT)</a> </p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">9</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">Originator address (ORG)</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">10</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">ASDU address fields</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">11</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">(2 octets)</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">12</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">Information object address fields (IOA)</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">13</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">(3 octets)</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">14</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">15</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">Object information</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">...</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">...</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">...</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">n-1</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">n</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="linklist"><a href="983819915.html"></a><a href="983848075.html"></a></div>
+        </div>
+        <div class="textmodule" id="985943947">
+            <h2 class="subheading">Telegram format with fixed length</h2>
+            <table class="table tabletype-framed table-scaled">
+                <colgroup>
+                    <col style="width: 1.46cm;">
+                    <col style="width: 1.46cm;">
+                    <col style="width: 1.46cm;">
+                    <col style="width: 1.46cm;">
+                    <col style="width: 1.46cm;">
+                    <col style="width: 1.46cm;">
+                    <col style="width: 1.46cm;">
+                    <col style="width: 1.46cm;">
+                    <col style="width: 1.46cm;">
+                    <col style="width: 1.46cm;">
+                    <col style="width: 1.46cm;">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td>
+                            <p class="text-center">byte\bit</p>
+                        </td>
+                        <td>
+                            <p class="text-center">7</p>
+                        </td>
+                        <td>
+                            <p class="text-center">6</p>
+                        </td>
+                        <td>
+                            <p class="text-center">5</p>
+                        </td>
+                        <td>
+                            <p class="text-center">4</p>
+                        </td>
+                        <td>
+                            <p class="text-center">3</p>
+                        </td>
+                        <td>
+                            <p class="text-center">2</p>
+                        </td>
+                        <td>
+                            <p class="text-center">1</p>
+                        </td>
+                        <td>
+                            <p class="text-center">0</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">0</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">Start byte (0x68)</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                        <td rowspan="6">
+                            <p class="text-center">APCI</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">1</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">4 (Length of the APDU)</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">2</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">Control field 1</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">3</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">Control field 2</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">4</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">Control field 3</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">5</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">Control field 4</p>
+                        </td>
+                        <td>
+                            <p class="text-left">&nbsp;</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="textmodule" id="985946507">
+            <h2 class="subheading">Control field formats</h2>
+            <p>Two types of control field formats: I-Format, S-Format are used to perform numbered information transfer.
+            </p>
+            <p>The third: U-Format control field is used to perform unnumbered link layer control functions.</p>
+        </div>
+        <div class="textmodule" id="985949067">
+            <h2 class="subheading">I-Format</h2>
+            <table class="table tabletype-framed table-scaled">
+                <colgroup>
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td>
+                            <p class="text-center">byte\bit</p>
+                        </td>
+                        <td>
+                            <p class="text-center">7</p>
+                        </td>
+                        <td>
+                            <p class="text-center">6</p>
+                        </td>
+                        <td>
+                            <p class="text-center">5</p>
+                        </td>
+                        <td>
+                            <p class="text-center">4</p>
+                        </td>
+                        <td>
+                            <p class="text-center">3</p>
+                        </td>
+                        <td>
+                            <p class="text-center">2</p>
+                        </td>
+                        <td>
+                            <p class="text-center">1</p>
+                        </td>
+                        <td>
+                            <p class="text-center">0</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">0</p>
+                        </td>
+                        <td colspan="7">
+                            <p class="text-center">Send sequence number N(S) LSB</p>
+                        </td>
+                        <td>
+                            <p class="text-center">0</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">1</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">Send sequence number N(S) MSB</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">2</p>
+                        </td>
+                        <td colspan="7">
+                            <p class="text-center">Receive sequence number N(R) LSB</p>
+                        </td>
+                        <td>
+                            <p class="text-center">0</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">3</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">Receive sequence number N(R) MSB</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="textmodule" id="985951627">
+            <h2 class="subheading">S-Format</h2>
+            <table class="table tabletype-framed table-scaled">
+                <colgroup>
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td>
+                            <p class="text-center">byte\bit</p>
+                        </td>
+                        <td>
+                            <p class="text-center">7</p>
+                        </td>
+                        <td>
+                            <p class="text-center">6</p>
+                        </td>
+                        <td>
+                            <p class="text-center">5</p>
+                        </td>
+                        <td>
+                            <p class="text-center">4</p>
+                        </td>
+                        <td>
+                            <p class="text-center">3</p>
+                        </td>
+                        <td>
+                            <p class="text-center">2</p>
+                        </td>
+                        <td>
+                            <p class="text-center">1</p>
+                        </td>
+                        <td>
+                            <p class="text-center">0</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">0</p>
+                        </td>
+                        <td colspan="6">
+                            <p class="text-center">0</p>
+                        </td>
+                        <td>
+                            <p class="text-center">0</p>
+                        </td>
+                        <td>
+                            <p class="text-center">1</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">1</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">0</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">2</p>
+                        </td>
+                        <td colspan="7">
+                            <p class="text-center">Receive sequence number N(R) LSB</p>
+                        </td>
+                        <td>
+                            <p class="text-center">0</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">3</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">Receive sequence number N(R) MSB</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="textmodule" id="985954187">
+            <h2 class="subheading">U-Format</h2>
+            <table class="table tabletype-framed table-scaled">
+                <colgroup>
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                    <col style="width: 1.78cm;">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <td>
+                            <p class="text-center">byte\bit</p>
+                        </td>
+                        <td>
+                            <p class="text-center">7</p>
+                        </td>
+                        <td>
+                            <p class="text-center">6</p>
+                        </td>
+                        <td>
+                            <p class="text-center">5</p>
+                        </td>
+                        <td>
+                            <p class="text-center">4</p>
+                        </td>
+                        <td>
+                            <p class="text-center">3</p>
+                        </td>
+                        <td>
+                            <p class="text-center">2</p>
+                        </td>
+                        <td>
+                            <p class="text-center">1</p>
+                        </td>
+                        <td>
+                            <p class="text-center">0</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">0</p>
+                        </td>
+                        <td colspan="2">
+                            <p class="text-center">TESTFR</p>
+                        </td>
+                        <td colspan="2">
+                            <p class="text-center">STOPDT</p>
+                        </td>
+                        <td colspan="2">
+                            <p class="text-center">STARTDT</p>
+                        </td>
+                        <td>
+                            <p class="text-center">1</p>
+                        </td>
+                        <td>
+                            <p class="text-center">1</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">1</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">0</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">2</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">0</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-center">3</p>
+                        </td>
+                        <td colspan="8">
+                            <p class="text-center">0</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="textmodule" id="985956747">
+            <h2 class="subheading">Simple samples and explanations</h2>
+            <p>104 substation configuration: COT = 2 octets (includes originator address), ASDU address = 2 octets, IOA
+                address = 3 octets</p>
+        </div>
+        <div class="textmodule" id="985959307">
+            <h2 class="subheading">Sample 1</h2>
+            <p>68 0E 4E 14 7C 00 65 01 0A 00 0C 00 00 00 00 05</p>
+            <table class="table tabletype-header table-fixed">
+                <colgroup>
+                    <col style="width: 50.0%;">
+                    <col style="width: 50.0%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>
+                            <p class="text-left">LPDU bytes</p>
+                        </th>
+                        <th>
+                            <p class="text-left">Explanation</p>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <p class="text-left">68</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Start byte</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">0E</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Length of the APDU = 14</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">4E</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Send sequence number N(S) LSB, bit 0 = 0 =&gt; I-Format</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">14</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Send sequence number N(S) MSB</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">7C</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Receive sequence number N(R) LSB</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">00</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Receive sequence number N(R) MSB</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">65</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Type identification: C_CI_NA_1 (counter interrogation command)</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">01</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Number of objects = 1</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">0A</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Cause of transmission = 10 (activation termination)</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">00</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Originator address = 0</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">0C 00</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Common ASDU address (2 octets) = 12 dec.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">00 00 00</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Object address (3 octets)</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">05</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Counter interrogation request qualifier = 5 (general counter
+                                interrogation)</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="textmodule" id="985961867">
+            <h2 class="subheading">Sample 2</h2>
+            <p>68 34 5A 14 7C 00 0B 07 03 00 0C 00 10 30 00 BE 09 00 11 30 00 90 09 00 0E 30 00 75 00 00 28 30 00 25 09
+                00 29 30 00 75 00 00 0F 30 00 0F 0A 00 2E 30 00 AE 05 00</p>
+            <table class="table tabletype-header table-fixed">
+                <colgroup>
+                    <col style="width: 50.0%;">
+                    <col style="width: 50.0%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>
+                            <p class="text-left">LPDU bytes</p>
+                        </th>
+                        <th>
+                            <p class="text-left">Explanation</p>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <p class="text-left">68</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Start byte</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">34</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Length of the APDU = 52</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">5A</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Send sequence number N(S) LSB, bit 0 = 0 =&gt; I-Format</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">14</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Send sequence number N(S) MSB</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">7C</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Receive sequence number N(R) LSB</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">00</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Receive sequence number N(R) MSB</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">0B</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Type identification: M_ME_NB_1(measured value, scaled value)</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">07</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Number of objects = 7</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">03</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Cause of transmission = 3 (spontanous)</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">00</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Originator address = 0</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">0C 00</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Common ASDU address (2 octets) = 12 dec.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">10 30 00</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Object address (3 octets) of <strong>first</strong> information object
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">BE 09 00</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Scaled value + QDS (quality descriptor) of <strong>first</strong>
+                                information object</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">11 30 00</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Object address (3 octets) of <strong>second</strong> information object
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">90 09 00</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Scaled value + QDS (quality descriptor) of <strong>second</strong>
+                                information object</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">0E 30 00</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Object address (3 octets) of <strong>third</strong> information object
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">75 00 00</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Scaled value + QDS (quality descriptor) of <strong>third</strong>
+                                information object</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">28 30 00 25 09 00<br> 29 30 00 75 00 00<br> 0F 30 00 0F 0A 00<br> 2E 30
+                                00 AE 05 00</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Object address + Scaled value + QDS (quality descriptor) of information
+                                object four to seven</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="textmodule" id="985964427">
+            <h2 class="subheading">Sample 3</h2>
+            <p>68 04 01 00 7E 14</p>
+            <table class="table tabletype-header table-fixed">
+                <colgroup>
+                    <col style="width: 50.0%;">
+                    <col style="width: 50.0%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>
+                            <p class="text-left">LPDU bytes</p>
+                        </th>
+                        <th>
+                            <p class="text-left">Explanation</p>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <p class="text-left">68</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Start byte</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">04</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Length of the APDU = 4</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">01</p>
+                        </td>
+                        <td>
+                            <p class="text-left">bits 2..7 reserved, bit 0 = 1 and bit 1 = 0 =&gt; S-Format</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">00</p>
+                        </td>
+                        <td>
+                            <p class="text-left">reserved</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">7E</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Receive sequence number N(R) LSB</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="text-left">14</p>
+                        </td>
+                        <td>
+                            <p class="text-left">Receive sequence number N(R) MSB</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </article>
+    <footer>
+        <p class="text-muted">© 2023 Beckhoff Automation</p>
+    </footer>
+    <script src="https://infosys.beckhoff.com/../assets/js/00-jquery.min.js"></script>
+    <script src="https://infosys.beckhoff.com/../assets/js/01-bootstrap.min.js"></script>
+</body>
+
+</html>
