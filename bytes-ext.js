@@ -21,13 +21,21 @@ Array.prototype.toUInt = function (endianness = Enums.Endianness.Little) {
     let value = 0;
     for (let i = 0; i < tmp.length; i++) {
         value = (value << 8) + tmp[i];
-       // value += tmp[i];
+        // value += tmp[i];
     }
     return value;
 }
 
-Array.prototype.toInt = function () {
-
+Array.prototype.toInt = function (endianness) {
+    let uint = this.toUInt(endianness);
+    // support up to 64 bit Integer
+    let msb = Math.pow(2, Math.ceil(Math.log2(this.length))) * 8;
+    if ((uint & 1 << (msb - 1)) > 0) {
+        return -1 * ((1 << msb) - uint);
+    }
+    else {
+        return uint;
+    }
 }
 
 String.prototype.toBytes = function () {
