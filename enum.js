@@ -11,6 +11,9 @@ const UFormatSignalling = Object.freeze({
     TESTFR_Order: 0x43,
     TESTFR_Confirm: 0x83,
     toString: function (enumValue) {
+        if (Array.isArray(enumValue) && enumValue.length > 0) {
+            enumValue = enumValue[0];
+        }
         switch (enumValue) {
             case this.STARTDT_Confirm:
                 return 'Start Confirm';
@@ -24,11 +27,13 @@ const UFormatSignalling = Object.freeze({
                 return 'Test Confirm';
             case this.TESTFR_Order:
                 return 'Test Order';
+            default:
+                throw new Error("无效的传入参数，非法的U格式帧控制域。");
         }
     }
 });
 
-const ASDUTypeId = Object.freeze({
+const AsduType = Object.freeze({
     M_SP_NA_1: 0x01,    //Single-point information
     M_SP_TA_1: 0x02,    //Single-point information with time tag
     M_DP_NA_1: 0x03,    //Double-point information
@@ -271,8 +276,216 @@ const ASDUTypeId = Object.freeze({
     ASDU_TYPE_252: 0xFA,
     ASDU_TYPE_253: 0xFB,
     ASDU_TYPE_254: 0xFC,
-    ASDU_TYPE_255: 0xFD
+    ASDU_TYPE_255: 0xFD,
+    toString: function (enumValue) {
+        if (Array.isArray(enumValue) && enumValue.length > 0) {
+            enumValue = enumValue[0];
+        }
+        switch (enumValue) {
+            case this.M_SP_NA_1: return 'Single-point information';
+            case this.M_SP_TA_1: return 'Single-point information with time tag';
+            case this.M_DP_NA_1: return 'Double-point information';
+            case this.M_DP_TA_1: return 'Double-point information with time tag';
+            case this.M_ST_NA_1: return 'Step position information';
+            case this.M_ST_TA_1: return 'Step position information with time tag';
+            case this.M_BO_NA_1: return 'Bitstring of 32 bit';
+            case this.M_BO_TA_1: return 'Bitstring of 32 bit with time tag';
+            case this.M_ME_NA_1: return 'Measured value, normalised value';
+            case this.M_ME_TA_1: return 'Measured value, normalized value with time tag';
+            case this.M_ME_NB_1: return 'Measured value, scaled value';
+            case this.M_ME_TB_1: return 'Measured value, scaled value wit time tag';
+            case this.M_ME_NC_1: return 'Measured value, short floating point number';
+            case this.M_ME_TC_1: return 'Measured value, short floating point number with time tag';
+            case this.M_IT_NA_1: return 'Integrated totals';
+            case this.M_IT_TA_1: return 'Integrated totals with time tag';
+            case this.M_EP_TA_1: return 'Event of protection equipment with time tag';
+            case this.M_EP_TB_1: return 'Packed start events of protection equipment with time tag';
+            case this.M_EP_TC_1: return 'Packed output circuit information of protection equipment with time tag';
+            case this.M_PS_NA_1: return 'Packed single point information with status change detection';
+            case this.M_ME_ND_1: return 'Measured value, normalized value without quality descriptor';
+            case this.M_SP_TB_1: return 'Single-point information with time tag CP56Time2a';
+            case this.M_DP_TB_1: return 'Double-point information with time tag CP56Time2a';
+            case this.M_ST_TB_1: return 'Step position information with time tag CP56Time2a';
+            case this.M_BO_TB_1: return 'Bitstring of 32 bit with time tag CP56Time2a';
+            case this.M_ME_TD_1: return 'Measured value, normalised value with time tag CP56Time2a';
+            case this.M_ME_TE_1: return 'Measured value, scaled value with time tag CP56Time2a';
+            case this.M_ME_TF_1: return 'Measured value, short floating point number with time tag CP56Time2a';
+            case this.M_IT_TB_1: return 'Integrated totals with time tag CP56Time2a';
+            case this.M_EP_TD_1: return 'Event of protection equipment with time tag CP56Time2a';
+            case this.M_EP_TE_1: return 'Packed start events of protection equipment with time tag CP56Time2a';
+            case this.M_EP_TF_1: return 'Packed output circuit information of protection equipment with time tag CP56Time2a';
+            case this.C_SC_NA_1: return 'Single command';
+            case this.C_DC_NA_1: return 'Double command';
+            case this.C_RC_NA_1: return 'Regulating step command';
+            case this.C_SE_NA_1: return 'Set-point Command, normalised value';
+            case this.C_SE_NB_1: return 'Set-point Command, scaled value';
+            case this.C_SE_NC_1: return 'Set-point Command, short floating point number';
+            case this.C_BO_NA_1: return 'Bitstring 32 bit command';
+            case this.C_SC_TA_1: return 'Single command with time tag CP56Time2a';
+            case this.C_DC_TA_1: return 'Double command with time tag CP56Time2a';
+            case this.C_RC_TA_1: return 'Regulating step command with time tag CP56Time2a';
+            case this.C_SE_TA_1: return 'Measured value, normalised value command with time tag CP56Time2a';
+            case this.C_SE_TB_1: return 'Measured value, scaled value command with time tag CP56Time2a';
+            case this.C_SE_TC_1: return 'Measured value, short floating point number command with time tag CP56Time2a';
+            case this.C_BO_TA_1: return 'Bitstring of 32 bit command with time tag CP56Time2a';
+            case this.M_EI_NA_1: return 'End of Initialisation';
+            case this.C_IC_NA_1: return 'Interrogation command';
+            case this.C_CI_NA_1: return 'Counter interrogation command';
+            case this.C_RD_NA_1: return 'Read Command';
+            case this.C_CS_NA_1: return 'Clock synchronisation command';
+            case this.C_TS_NA_1: return 'Test command';
+            case this.C_RP_NA_1: return 'Reset process command';
+            case this.C_CD_NA_1: return 'C_CD_NA_1 Delay acquisition command';
+            case this.C_TS_TA_1: return 'Test command with time tag CP56Time2a';
+            case this.P_ME_NA_1: return 'Parameter of measured values, normalized value';
+            case this.P_ME_NB_1: return 'Parameter of measured values, scaled value';
+            case this.P_ME_NC_1: return 'Parameter of measured values, short floating point number';
+            case this.P_AC_NA_1: return 'Parameter activation';
+            case this.F_FR_NA_1: return 'File ready';
+            case this.F_SR_NA_1: return 'Section ready';
+            case this.F_SC_NA_1: return 'Call directory, select file, call file, call section';
+            case this.F_LS_NA_1: return 'Last section, last segment';
+            case this.F_FA_NA_1: return 'ACK file, ACK section';
+            case this.F_SG_NA_1: return 'Segment';
+            case this.F_DR_TA_1: return 'Directory';
+
+            case (enumValue >= this.ASDU_TYPE_22 && enumValue <= this.ASDU_TYPE_29):
+            case (enumValue >= this.ASDU_TYPE_41 && enumValue <= this.ASDU_TYPE_44):
+            case (enumValue >= this.ASDU_TYPE_52 && enumValue <= this.ASDU_TYPE_57):
+            case (enumValue >= this.ASDU_TYPE_65 && enumValue <= this.ASDU_TYPE_69):
+            case (enumValue >= this.ASDU_TYPE_71 && enumValue <= this.ASDU_TYPE_99):
+            case (enumValue >= this.ASDU_TYPE_108 && enumValue <= this.ASDU_TYPE_109):
+            case (enumValue >= this.ASDU_TYPE_114 && enumValue <= this.ASDU_TYPE_119):
+            case (enumValue >= this.ASDU_TYPE_140 && enumValue <= this.ASDU_TYPE_255): return 'Unknown ASDU type';
+            case (enumValue >= this.ASDU_TYPE_127 && enumValue < this.ASDU_TYPE_140): return 'Reserved user ASDU types';
+            default:
+                throw new Error("非法的传入参数，enumValue应为合法的ASDU类别枚举值。");
+
+        }
+    }
 });
+
+const CotType = Object.freeze({
+    COT_UNUSED: 0,
+    COT_CYCLIC: 1,
+    COT_BACKGROUND: 2,
+    COT_SPONTAN: 3,
+    COT_INIT: 4,
+    COT_REQ: 5,
+    COT_ACT: 6,
+    COT_ACT_CON: 7,
+    COT_DEACT: 8,
+    COT_DEACT_CON: 9,
+    COT_ACT_TERM: 10,
+    COT_RETREM: 11,
+    COT_RETLOC: 12,
+    COT_FILE: 13,
+    COT_14: 14,
+    COT_15: 15,
+    COT_16: 16,
+    COT_17: 17,
+    COT_18: 18,
+    COT_19: 19,
+    COT_INROGEN: 20,
+    COT_INRO1: 21,
+    COT_INRO2: 22,
+    COT_INRO3: 23,
+    COT_INRO4: 24,
+    COT_INRO5: 25,
+    COT_INRO6: 26,
+    COT_INRO7: 27,
+    COT_INRO8: 28,
+    COT_INRO9: 29,
+    COT_INRO10: 30,
+    COT_INRO11: 31,
+    COT_INRO12: 32,
+    COT_INRO13: 33,
+    COT_INRO14: 34,
+    COT_INRO15: 35,
+    COT_INRO16: 36,
+    COT_REQCOGEN: 37,
+    COT_REQCO1: 38,
+    COT_REQCO2: 39,
+    COT_REQCO3: 40,
+    COT_REQCO4: 41,
+    COT_42: 42,
+    COT_43: 43,
+    COT_UNKNOWN_TYPE: 44,
+    COT_UNKNOWN_CAUSE: 45,
+    COT_UNKNOWN_ASDU_ADDRESS: 46,
+    COT_UNKNOWN_OBJECT_ADDRESS: 47,
+    COT_48: 48,
+    COT_49: 49,
+    COT_50: 50,
+    COT_51: 51,
+    COT_52: 52,
+    COT_53: 53,
+    COT_54: 54,
+    COT_55: 55,
+    COT_56: 56,
+    COT_57: 57,
+    COT_58: 58,
+    COT_59: 59,
+    COT_60: 60,
+    COT_61: 61,
+    COT_62: 62,
+    COT_63: 63,
+    toString(enumValue) {
+        if (Array.isArray(enumValue) && enumValue.length > 0) {
+            enumValue = enumValue[0];
+        }
+        switch (enumValue) {
+            case this.COT_UNUSED: return 'Is not used';
+            case this.COT_CYCLIC: return ' Cyclic data';
+            case this.COT_BACKGROUND: return 'Background scan';
+            case this.COT_SPONTAN: return 'Spontaneous data';
+            case this.COT_INIT: return 'End of initialization';
+            case this.COT_REQ: return 'Read request';
+            case this.COT_ACT: return 'Command activation';
+            case this.COT_ACT_CON: return 'Confirmation of command activation';
+            case this.COT_DEACT: return 'Command abortion';
+            case this.COT_DEACT_CON: return 'Confirmation of command abortion';
+            case this.COT_ACT_TERM: return 'Termination of command activation';
+            case this.COT_RETREM: return 'Response due to remote command';
+            case this.COT_RETLOC: return 'Response due to local command';
+            case this.COT_FILE: return 'File access';
+            case this.COT_INROGEN: return 'Station interrogation (general)';
+            case this.COT_INRO1: return 'Station interrogation for group 1';
+            case this.COT_INRO2: return 'Station interrogation for group 2';
+            case this.COT_INRO3: return 'Station interrogation for group 3';
+            case this.COT_INRO4: return 'Station interrogation for group 4';
+            case this.COT_INRO5: return 'Station interrogation for group 5';
+            case this.COT_INRO6: return 'Station interrogation for group 6';
+            case this.COT_INRO7: return 'Station interrogation for group 7';
+            case this.COT_INRO8: return 'Station interrogation for group 8';
+            case this.COT_INRO9: return 'Station interrogation for group 9';
+            case this.COT_INRO10: return 'Station interrogation for group 10';
+            case this.COT_INRO11: return 'Station interrogation for group 11';
+            case this.COT_INRO12: return 'Station interrogation for group 12';
+            case this.COT_INRO13: return 'Station interrogation for group 13';
+            case this.COT_INRO14: return 'Station interrogation for group 14';
+            case this.COT_INRO15: return 'Station interrogation for group 15';
+            case this.COT_INRO16: return 'Station interrogation for group 16';
+            case this.COT_REQCOGEN: return 'Counter interrogation (general)';
+            case this.COT_REQCO1: return 'Counter interrogation for group 1';
+            case this.COT_REQCO2: return 'Counter interrogation for group 2';
+            case this.COT_REQCO3: return 'Counter interrogation for group 3';
+            case this.COT_REQCO4: return 'Counter interrogation for group 4';
+            case this.COT_UNKNOWN_TYPE: return 'Unknown type';
+            case this.COT_UNKNOWN_CAUSE: return 'Unknown cause of transfer';
+            case this.COT_UNKNOWN_ASDU_ADDRESS: return 'Unknown common ASDU address';
+            case this.COT_UNKNOWN_OBJECT_ADDRESS: return 'Unknown object address';
+            case (enumValue>=14 || enumValue<=19):
+            case (enumValue>=42 || enumValue<=43):
+            case (enumValue>=48 || enumValue<=63):
+                return 'Reserved/unused range';
+            default:
+                throw new Error("无效的传入参数，enumValue应为合法的COT枚举值。");
+
+        }
+    }
+});
+
 module.exports = {
-    Endianness, UFormatSignalling
+    Endianness, UFormatSignalling, AsduType, CotType
 }

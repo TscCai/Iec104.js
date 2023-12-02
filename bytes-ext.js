@@ -1,7 +1,16 @@
 const Enums = require('./enum');
+
+String.prototype.toBytes = function () {
+    let result = this.split(' ');
+    for (let i = 0; i < result.length; i++) {
+        result[i] = parseInt(`0x${result[i]}`);
+    }
+    return result;
+}
+
 Array.prototype.readBytes = function (count, offset = 0) {
-    if (count < 0 || offset < 0) {
-        throw new Error("count和offset应为正整数");
+    if (count <= 0 || offset < 0) {
+        throw new Error("非法的传入参数。count应为正整数，offset应为不小于0的整数。");
     }
     if (this.length < count + offset) {
         throw new Error("没有足够的字节供读取");
@@ -26,6 +35,7 @@ Array.prototype.toUInt = function (endianness = Enums.Endianness.Little) {
     return value;
 }
 
+// 将数组转换为有符号整型
 Array.prototype.toInt = function (endianness) {
     let uint = this.toUInt(endianness);
     // support up to 64 bit Integer
@@ -38,10 +48,6 @@ Array.prototype.toInt = function (endianness) {
     }
 }
 
-String.prototype.toBytes = function () {
-    let result = this.split(' ');
-    for (let i = 0; i < result.length; i++) {
-        result[i] = parseInt(`0x${result[i]}`);
-    }
-    return result;
+Array.prototype.toFloat=function(endianness){
+    return 0;
 }
