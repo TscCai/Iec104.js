@@ -157,7 +157,7 @@ const AsduType = Object.freeze({
     F_SR_NA_1: 0x79,    //Section ready
     F_SC_NA_1: 0x7A,    //Call directory, select file, call file, call section
     F_LS_NA_1: 0x7B,    //Last section, last segment
-    F_FA_NA_1: 0x7C,    //ACK file, ACK section
+    F_AF_NA_1: 0x7C,    //ACK file, ACK section
     F_SG_NA_1: 0x7D,    //Segment
     F_DR_TA_1: 0x7E,    //Directory
     ASDU_TYPE_127: 0x7D,//Reserved user asdu types
@@ -345,7 +345,7 @@ const AsduType = Object.freeze({
             case this.F_SR_NA_1: return 'Section ready';
             case this.F_SC_NA_1: return 'Call directory, select file, call file, call section';
             case this.F_LS_NA_1: return 'Last section, last segment';
-            case this.F_FA_NA_1: return 'ACK file, ACK section';
+            case this.F_AF_NA_1: return 'ACK file, ACK section';
             case this.F_SG_NA_1: return 'Segment';
             case this.F_DR_TA_1: return 'Directory';
 

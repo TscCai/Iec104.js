@@ -1,0 +1,48 @@
+<html>
+<textarea id="txt" cols="120" rows="20">
+
+    </textarea>
+<button onclick="gen()">GO</button>
+<script>
+    function gen() {
+        const lines = document.getElementById("txt").value.split("\n");
+        let name, tid, desc;
+        let result = '';
+        let exports = '';
+        for (let line of lines) {
+            let reg = /(\w+): (.*),    \/\/(.*)$/;
+            const mc = reg.exec(line);
+            name = mc[1];
+            tid = mc[2];
+            desc = mc[3];
+            exports += `${tid}:${name},`;
+            result += `const ${name} = class extends BaseInformationObject {
+                    static TID = ${tid};
+                    static Description = "${desc}";
+                    static ByteLength = 0;
+                    constructor(bytes) {
+
+                    }
+                }\n`;
+        }
+
+        console.log(result + "\n" + exports);
+        // M_DP_TA_1: 0x04,    //Double-point information with time tag
+
+        /*
+        
+        const M_DP_NA_1 = class extends BaseInformationObject {
+            static TID = 0x03;
+            static Description = 'Double-point information'
+            static ByteLength = BaseType.DIQ.ByteLength;
+            constructor(bytes) {
+                this.Value = new BaseType.DIQ(bytes);
+            }
+        }
+        
+        
+        */
+    }
+</script>
+
+</html>

@@ -1,12 +1,13 @@
-const Ext = require('./bytes-ext');
+require('./bytes-ext');
 const Enums = require('./enum');
 const Const = require('./constant');
+const AsduFactory = require('./information-object-factory');
+const InformationObject = require('./data-types/asdu-type');
 const Iec104Packet = class {
     #streamPointer = 0;
 
     #rawBytes = [];
     get RawBytes() { return this.#rawBytes; }
-
 
     #apduLength = 0;   // 1B
     get ApduLength() { return this.#apduLength; }
@@ -39,6 +40,7 @@ const Iec104Packet = class {
         }
 
         this.#parsePacket();
+
     }
 
     #readByteStream(length, offset = this.#streamPointer) {
@@ -103,7 +105,7 @@ const Iec104Packet = class {
 
         // Read Type identification
         let bytes = this.#readByteStream(Const.LEN_ASDU_TYPE);
-        result.Type = Enums.AsduType.toString(bytes);
+        result.Type = { RawBytes: bytes, Description: Enums.AsduType.toString(bytes) };
 
         bytes = this.#readByteStream(Const.LEN_NUM_OF_OBJECT);
         let tmp = bytes.toUInt();
@@ -123,15 +125,30 @@ const Iec104Packet = class {
 
         bytes = this.#readByteStream(this.#LEN_ASDU_ADDR);
         result.AsduAddr = bytes.toUInt();
-
-        bytes = this.#readByteStream(this.#LEN_IO_ADDR);
-        result.InformationObjectAddr = bytes.toUInt();
-
+        result.InformationObjectAddr = [];
+        result.InformationObjects = [];
+        let tid = result.Type.RawBytes.toUInt();
         if (result.IsSequence) {
+            bytes = this.#readByteStream(this.#LEN_IO_ADDR);
+            result.InformationObjectAddr.push(bytes.toUInt());
+
             // Follow with Information Objects without address 
+            for (let i = 0; i < result.NumberOfObjects; i++) {
+
+                let len = InformationObject[tid].ByteLength;
+                bytes = this.#readByteStream(len);
+                result.InformationObjects.push(AsduFactory.createInformationObject(tid, bytes));
+            }
         }
         else {
-
+            for (let i = 0; i < result.NumberOfObjects; i++) {
+                let len = InformationObject[tid].ByteLength;
+                bytes = this.#readByteStream(this.#LEN_IO_ADDR);
+                result.InformationObjectAddr.push(bytes.toUInt());
+                bytes = this.#readByteStream(len);
+                // do sth
+                result.InformationObjects.push(AsduFactory.createInformationObject(tid, bytes));
+            }
         }
 
 

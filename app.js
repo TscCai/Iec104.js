@@ -7,7 +7,7 @@ const input = "68 34 5A 14 7C 00 0B 07 03 00 0C 00 10 30 00 BE 09 00 11 30 00 90
 
 
 try {
-    const p = new Iec104Packet(input.toBytes(), {cotLength:2, asduAddrLength:2, ioAddrLength:3});
+    const p = new Iec104Packet(input.toBytes(), { cotLength: 2, asduAddrLength: 2, ioAddrLength: 3 });
 
     p.ApduLength = 2333;
     console.log(p.ApduLength);
@@ -20,7 +20,6 @@ try {
 
     p.Asdu = { dog: "Spike" }
     console.log(p.Asdu);
-
 
 
 }
