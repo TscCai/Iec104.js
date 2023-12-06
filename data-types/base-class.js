@@ -265,4 +265,100 @@ const R32 = class {
     }
 }
 
-module.exports = { SIQ, DIQ, QDS, QDP, VTI, NVA, SVA, R32 }
+const BCR = class {
+    static ByteLength = 5;
+    Value = {};
+
+    #mask_sequence = 0xF8;
+    #mask_isOverflow = 0x04;
+    #mask_isAdjust = 0x02;
+    #mask_isInvalid = 0x01;
+
+    constructor(bytes) {
+        if (bytes != undefined) {
+            let tmp = bytes.toInt();
+            checkConstructArgs(tmp, BCR.ByteLength);
+            let count = bytes.readBytes(4, 0).toInt();
+            let sequenceFlag = bytes.readBytes(5, 4).toUInt();
+            let sqNum = sequenceFlag & this.#mask_sequence;
+            let isOverflow = Boolean(sequenceFlag & this.#mask_isOverflow);
+            let isInvalid = Boolean(sequenceFlag & this.#mask_isInvalid);
+            let isAdjust = Boolean(sequenceFlag & this.#mask_isAdjust);
+            this.Value = { Count: count, IsOverflow: isOverflow, IsAdjust: isAdjust, IsInvalid: isInvalid };
+        }
+    }
+    toByte() {
+        throw new Error("Not Implement.");
+    }
+}
+
+const SEP = class extends BaseTypeQ {
+    static ByteLength = 1;
+    #mask_value = 0x03;
+    #mask_reserved = 0x04;
+    #mask_effect_invalid = 0x10;
+    EffectInvalid = false;
+    Value = 0;
+    ReservedBit = 0;
+
+
+    constructor(bytes) {
+        super(bytes);
+        checkConstructArgs(this.RawValue, SEP.ByteLength);
+        this.Value = this.RawValue & this.#mask_value;
+        this.ReservedBit = this.RawValue & this.#mask_reserved;
+        this.EffectInvalid = this.RawValue & this.#mask_effect_invalid;
+
+    }
+
+    toByte() {
+
+        return super.toByte() | this.ReservedBit | this.Value;
+    }
+
+    toString() {
+        return super.toString();
+
+    }
+
+}
+
+const SPE = class {
+    static ByteLength = 1;
+    GeneralStart = false;
+    PhaseAStart = false;
+    PhaseBStart = false;
+    PhaseCStart = false;
+    ShortcutCurrentStart = false;
+    BackwardProtectionStart = false;
+    ReservedBit = 0;
+
+    #mask_GS = 0x01;
+    #mask_SL1 = 0x02;
+    #mask_SL2 = 0x04;
+    #mask_SL3 = 0x08;
+    #mask_SIE = 0x10;
+    #mask_SRD = 0x20;
+    #mask_reserved = 0xC0;
+
+    constructor(bytes) {
+        if (bytes != undefined) {
+            this.RawValue = extractRawValue(bytes);
+            checkConstructArgs(this.RawValue, SPE.ByteLength);
+            this.GeneralStart = Boolean(this.RawValue & this.#mask_GS);
+            this.PhaseAStart = Boolean(this.RawValue & this.#mask_SL1);
+            this.PhaseBStart = Boolean(this.RawValue & this.#mask_SL2);
+            this.PhaseCStart = Boolean(this.RawValue & this.#mask_SL3);
+            this.ShortcutCurrentStart = Boolean(this.RawValue & this.#mask_SIE);
+            this.BackwardProtectionStart = Boolean(this.RawValue & this.#mask_SRD)
+            this.ReservedBit = this.RawValue & this.#mask_reserved;
+        }
+    }
+    toBytes() {
+        throw new Error("Not implement");
+    }
+}
+
+module.exports = {
+    SIQ, DIQ, QDS, QDP, VTI, NVA, SVA, R32, BCR, SEP
+}
