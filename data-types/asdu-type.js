@@ -81,7 +81,7 @@ const M_ME_NA_1 = class extends BaseInformationObject {
     static Description = "Measured value, normalised value";
     static ByteLength = BaseType.NVA.ByteLength + BaseType.QDS.ByteLength;
     constructor(bytes) {
-        //this.Value = {NVA:new BaseType.NVA(bytes),QDS:new BaseType.QDS(bytes)}
+        this.Value = {NVA:new BaseType.NVA(bytes),QDS:new BaseType.QDS(bytes)}
         console.log("not implement");
     }
 }
@@ -99,7 +99,7 @@ const M_ME_NB_1 = class {
     static ByteLength = BaseType.SVA.ByteLength + BaseType.QDS.ByteLength;
     constructor(bytes) {
         //super(bytes);
-        this.Value = { Value: new BaseType.SVA(bytes.readBytes(2, 0)), Quality: new BaseType.QDS(bytes.readBytes(1, 2)) };
+        this.Value = { Value: new BaseType.SVA(bytes.readBytes(2, 0)).Value, Quality: new BaseType.QDS(bytes.readBytes(1, 2)) };
     }
 }
 const M_ME_TB_1 = class extends BaseInformationObject {
@@ -547,16 +547,22 @@ const F_DR_TA_1 = class extends BaseInformationObject {
 
 
 module.exports = {
-    0x01: M_SP_NA_1, 0x02: M_SP_TA_1, 0x03: M_DP_NA_1, 0x04: M_DP_TA_1, 0x05: M_ST_NA_1,
-    0x06: M_ST_TA_1, 0x07: M_BO_NA_1, 0x08: M_BO_TA_1, 0x09: M_ME_NA_1, 0x0A: M_ME_TA_1, 0x0B: M_ME_NB_1,
-    0x0C: M_ME_TB_1, 0x0D: M_ME_NC_1, 0x0E: M_ME_TC_1, 0x0F: M_IT_NA_1, 0x10: M_IT_TA_1, 0x11: M_EP_TA_1,
-    0x12: M_EP_TB_1, 0x13: M_EP_TC_1, 0x14: M_PS_NA_1, 0x15: M_ME_ND_1, 0x1E: M_SP_TB_1, 0x1F: M_DP_TB_1,
-    0x20: M_ST_TB_1, 0x21: M_BO_TB_1, 0x22: M_ME_TD_1, 0x23: M_ME_TE_1, 0x24: M_ME_TF_1, 0x25: M_IT_TB_1,
-    0x26: M_EP_TD_1, 0x27: M_EP_TE_1, 0x28: M_EP_TF_1, 0x2D: C_SC_NA_1, 0x2E: C_DC_NA_1, 0x2F: C_RC_NA_1,
-    0x30: C_SE_NA_1, 0x31: C_SE_NB_1, 0x32: C_SE_NC_1, 0x33: C_BO_NA_1, 0x3A: C_SC_TA_1, 0x3B: C_DC_TA_1,
-    0x3C: C_RC_TA_1, 0x3D: C_SE_TA_1, 0x3E: C_SE_TB_1, 0x3F: C_SE_TC_1, 0x40: C_BO_TA_1, 0x46: M_EI_NA_1,
-    0x64: C_IC_NA_1, 0x65: C_CI_NA_1, 0x66: C_RD_NA_1, 0x67: C_CS_NA_1, 0x68: C_TS_NA_1, 0x69: C_RP_NA_1,
-    0x6A: C_CD_NA_1, 0x6B: C_TS_TA_1, 0x6E: P_ME_NA_1, 0x6F: P_ME_NB_1, 0x70: P_ME_NC_1, 0x71: P_AC_NA_1,
-    0x78: F_FR_NA_1, 0x79: F_SR_NA_1, 0x7A: F_SC_NA_1, 0x7B: F_LS_NA_1, 0x7C: F_AF_NA_1, 0x7D: F_SG_NA_1,
-    0x7E: F_DR_TA_1
+    0x01: M_SP_NA_1, 0x02: M_SP_TA_1, 0x03: M_DP_NA_1, 0x04: M_DP_TA_1,
+    0x05: M_ST_NA_1, 0x06: M_ST_TA_1, 0x07: M_BO_NA_1, 0x08: M_BO_TA_1,
+    0x09: M_ME_NA_1, 0x0A: M_ME_TA_1, 0x0B: M_ME_NB_1, 0x0C: M_ME_TB_1,
+    0x0D: M_ME_NC_1, 0x0E: M_ME_TC_1, 0x0F: M_IT_NA_1, 0x10: M_IT_TA_1,
+    0x11: M_EP_TA_1, 0x12: M_EP_TB_1, 0x13: M_EP_TC_1, 0x14: M_PS_NA_1,
+    0x15: M_ME_ND_1, 0x1E: M_SP_TB_1, 0x1F: M_DP_TB_1, 0x20: M_ST_TB_1,
+    0x21: M_BO_TB_1, 0x22: M_ME_TD_1, 0x23: M_ME_TE_1, 0x24: M_ME_TF_1,
+    0x25: M_IT_TB_1, 0x26: M_EP_TD_1, 0x27: M_EP_TE_1, 0x28: M_EP_TF_1,
+    0x2D: C_SC_NA_1, 0x2E: C_DC_NA_1, 0x2F: C_RC_NA_1, 0x30: C_SE_NA_1,
+    0x31: C_SE_NB_1, 0x32: C_SE_NC_1, 0x33: C_BO_NA_1, 0x3A: C_SC_TA_1,
+    0x3B: C_DC_TA_1, 0x3C: C_RC_TA_1, 0x3D: C_SE_TA_1, 0x3E: C_SE_TB_1,
+    0x3F: C_SE_TC_1, 0x40: C_BO_TA_1, 0x46: M_EI_NA_1, 0x64: C_IC_NA_1,
+    0x65: C_CI_NA_1, 0x66: C_RD_NA_1, 0x67: C_CS_NA_1, 0x68: C_TS_NA_1,
+    0x69: C_RP_NA_1, 0x6A: C_CD_NA_1, 0x6B: C_TS_TA_1, 0x6E: P_ME_NA_1,
+    0x6F: P_ME_NB_1, 0x70: P_ME_NC_1, 0x71: P_AC_NA_1, 0x78: F_FR_NA_1,
+    0x79: F_SR_NA_1, 0x7A: F_SC_NA_1, 0x7B: F_LS_NA_1, 0x7C: F_AF_NA_1,
+    0x7D: F_SG_NA_1, 0x7E: F_DR_TA_1,
+    
 }

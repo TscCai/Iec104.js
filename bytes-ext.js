@@ -1,5 +1,3 @@
-const Enums = require('./enum');
-
 String.prototype.toBytes = function () {
     let result = this.split(' ');
     for (let i = 0; i < result.length; i++) {
@@ -18,19 +16,18 @@ Array.prototype.readBytes = function (count, offset = 0) {
     return this.slice(offset, count + offset);
 }
 // 将数组转换为无符号整型
-Array.prototype.toUInt = function (endianness = Enums.Endianness.Little) {
+Array.prototype.toUInt = function (littleEndianness = true) {
     if (this.length == 1) {
         return this[0];
     }
     let tmp = [...this];
-    if (endianness == Enums.Endianness.Little) {
+    if (littleEndianness) {
         tmp = tmp.reverse();
     }
     // Method 2
     let value = 0;
     for (let i = 0; i < tmp.length; i++) {
         value = (value << 8) + tmp[i];
-        // value += tmp[i];
     }
     return value;
 }

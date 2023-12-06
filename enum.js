@@ -1,8 +1,3 @@
-const Endianness = Object.freeze({
-    Little: 0,
-    Big: 1
-});
-
 const UFormatSignalling = Object.freeze({
     STARTDT_Order: 0x07,
     STARTDT_Confirm: 0x0B,
@@ -32,7 +27,7 @@ const UFormatSignalling = Object.freeze({
         }
     }
 });
-
+/*
 const AsduType = Object.freeze({
     M_SP_NA_1: 0x01,    //Single-point information
     M_SP_TA_1: 0x02,    //Single-point information with time tag
@@ -363,7 +358,7 @@ const AsduType = Object.freeze({
 
         }
     }
-});
+});*/
 
 const CotType = Object.freeze({
     COT_UNUSED: 0,
@@ -475,9 +470,9 @@ const CotType = Object.freeze({
             case this.COT_UNKNOWN_CAUSE: return 'Unknown cause of transfer';
             case this.COT_UNKNOWN_ASDU_ADDRESS: return 'Unknown common ASDU address';
             case this.COT_UNKNOWN_OBJECT_ADDRESS: return 'Unknown object address';
-            case (enumValue>=14 || enumValue<=19):
-            case (enumValue>=42 || enumValue<=43):
-            case (enumValue>=48 || enumValue<=63):
+            case (enumValue >= 14 || enumValue <= 19):
+            case (enumValue >= 42 || enumValue <= 43):
+            case (enumValue >= 48 || enumValue <= 63):
                 return 'Reserved/unused range';
             default:
                 throw new Error("无效的传入参数，enumValue应为合法的COT枚举值。");
@@ -487,5 +482,5 @@ const CotType = Object.freeze({
 });
 
 module.exports = {
-    Endianness, UFormatSignalling, AsduType, CotType
+    UFormatSignalling, CotType
 }

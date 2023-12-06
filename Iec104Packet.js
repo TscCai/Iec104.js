@@ -1,7 +1,7 @@
 require('./bytes-ext');
 const Enums = require('./enum');
 const Const = require('./constant');
-const AsduFactory = require('./information-object-factory');
+const InformationObjectFactory = require('./InformationObjectFactory');
 const InformationObject = require('./data-types/asdu-type');
 const Iec104Packet = class {
     #streamPointer = 0;
@@ -36,11 +36,8 @@ const Iec104Packet = class {
             this.#LEN_COT = settings.cotLength || this.#LEN_COT;
             this.#LEN_ASDU_ADDR = settings.asduAddrLength || this.#LEN_ASDU_ADDR;
             this.#LEN_IO_ADDR = settings.ioAddrLength || this.#LEN_IO_ADDR;
-            // console.log(`cot: ${this.#LEN_COT}, asdu_addr: ${this.#LEN_ASDU_ADDR}, ioa: ${this.#LEN_IO_ADDR}`)
         }
-
         this.#parsePacket();
-
     }
 
     #readByteStream(length, offset = this.#streamPointer) {
@@ -71,7 +68,6 @@ const Iec104Packet = class {
 
         if (this.FrameFormat == "I-Format") {
             this.#asdu = this.#parseAsdu();
-
         }
     }
 
@@ -102,10 +98,14 @@ const Iec104Packet = class {
 
     #parseAsdu() {
         let result = {};
+        result.toString = function () { return result }
 
         // Read Type identification
         let bytes = this.#readByteStream(Const.LEN_ASDU_TYPE);
-        result.Type = { RawBytes: bytes, Description: Enums.AsduType.toString(bytes) };
+        result.Type = {
+            RawBytes: bytes, Description: InformationObjectFactory.getDescription(bytes)
+        };
+     
 
         bytes = this.#readByteStream(Const.LEN_NUM_OF_OBJECT);
         let tmp = bytes.toUInt();
@@ -137,7 +137,9 @@ const Iec104Packet = class {
 
                 let len = InformationObject[tid].ByteLength;
                 bytes = this.#readByteStream(len);
-                result.InformationObjects.push(AsduFactory.createInformationObject(tid, bytes));
+                result.InformationObjects.push(
+                    InformationObjectFactory.createInstance(tid, bytes).Value
+                );
             }
         }
         else {
@@ -147,7 +149,9 @@ const Iec104Packet = class {
                 result.InformationObjectAddr.push(bytes.toUInt());
                 bytes = this.#readByteStream(len);
                 // do sth
-                result.InformationObjects.push(AsduFactory.createInformationObject(tid, bytes));
+                result.InformationObjects.push(
+                    InformationObjectFactory.createInstance(tid, bytes).Value
+                );
             }
         }
 

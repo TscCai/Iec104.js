@@ -10,7 +10,7 @@ try {
     const p = new Iec104Packet(input.toBytes(), { cotLength: 2, asduAddrLength: 2, ioAddrLength: 3 });
 
     p.ApduLength = 2333;
-    console.log(p.ApduLength);
+    console.log(`Length: ${p.ApduLength}`);
 
     p.FrameFormat = "HHH";
     console.log(p.FrameFormat);

@@ -1,4 +1,21 @@
 require('../bytes-ext')
+
+function checkConstructArgs(value, length = 1) {
+    if (!Number.isInteger(value) || value > (1 << (8 * length)) - 1) {
+        throw new Error(`非法的参数，参数类型应为${length * 8}位UInt`);
+    }
+    return true;
+}
+
+function extractRawValue(bytes) {
+    if (Array.isArray(bytes)) {
+        return bytes.toUInt();
+    }
+    else {
+        return bytes;
+    }
+}
+
 const BaseTypeQ = class {
 
     #mask_blocked = 0x10;
@@ -15,9 +32,9 @@ const BaseTypeQ = class {
 
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = BaseTypeQ.extractRawValue(bytes);
+            this.RawValue = extractRawValue(bytes);
 
-            //BaseTypeQ.checkConstructArgs(bytes);
+            //checkConstructArgs(bytes);
 
             this.Blocked = Boolean(this.RawValue & this.#mask_blocked);
             this.Substituted = Boolean(this.RawValue & this.#mask_substituted);
@@ -37,22 +54,6 @@ const BaseTypeQ = class {
         return super.toString();
     }
 
-    static checkConstructArgs(value, length = 1) {
-        if (!Number.isInteger(value) || value > (1 << (8 * length)) - 1) {
-            throw new Error(`非法的参数，参数类型应为${length * 8}位UInt`);
-        }
-        return true;
-    }
-
-    static extractRawValue(bytes) {
-        if (Array.isArray(bytes)) {
-            return bytes.toUInt();
-        }
-        else {
-            return bytes;
-        }
-    }
-
 }
 
 const SIQ = class extends BaseTypeQ {
@@ -66,7 +67,7 @@ const SIQ = class extends BaseTypeQ {
 
     constructor(bytes) {
         super(bytes);
-        BaseTypeQ.checkConstructArgs(this.RawValue, SIQ.ByteLength);
+        checkConstructArgs(this.RawValue, SIQ.ByteLength);
         this.Value = Boolean(bytes & this.#mask_value);
         this.ReservedBit = bytes & this.#mask_reserved;
 
@@ -96,7 +97,7 @@ const DIQ = class extends BaseTypeQ {
 
     constructor(bytes) {
         super(bytes);
-        BaseTypeQ.checkConstructArgs(this.RawValue, DIQ.ByteLength);
+        checkConstructArgs(this.RawValue, DIQ.ByteLength);
         this.Value = this.RawValue & this.#mask_value;
         this.ReservedBit = this.RawValue & this.#mask_reserved;
 
@@ -132,8 +133,8 @@ const QDS = class {
 
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = BaseTypeQ.extractRawValue(bytes);
-            BaseTypeQ.checkConstructArgs(this.RawValue, QDS.ByteLength);
+            this.RawValue = extractRawValue(bytes);
+            checkConstructArgs(this.RawValue, QDS.ByteLength);
 
             this.Invalid = Boolean(this.RawValue & this.#mask_invalid);
             this.NotTopical = Boolean(this.RawValue & this.#mask_notTopical);
@@ -159,7 +160,7 @@ const QDP = class extends BaseTypeQ {
     constructor(bytes) {
         super(bytes);
 
-        BaseTypeQ.checkConstructArgs(this.RawValue, QDP.ByteLength);
+        checkConstructArgs(this.RawValue, QDP.ByteLength);
         this.EffectInvalid = this.RawValue & this.#mask_effect_invalid;
         this.ReservedBit = this.RawValue & this.#mask_reserved;
     }
@@ -183,8 +184,8 @@ const VTI = class {
 
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = BaseTypeQ.extractRawValue(bytes);
-            BaseTypeQ.checkConstructArgs(this.RawValue, VTI.ByteLength);
+            this.RawValue = extractRawValue(bytes);
+            checkConstructArgs(this.RawValue, VTI.ByteLength);
             this.Value = this.RawValue & this.#mask_value;
             this.Transient = this.RawValue & this.#mask_transient;
         }
@@ -212,7 +213,7 @@ const NVA = class {
         if (bytes != undefined) {
             this.FullValue = fullValue;
             this.Value = bytes.toInt();
-            BaseTypeQ.checkConstructArgs(this.Value, NVA.ByteLength);
+            checkConstructArgs(this.Value, NVA.ByteLength);
         }
     }
     toByte() {
@@ -226,7 +227,7 @@ const SVA = class {
     constructor(bytes) {
         if (bytes != undefined) {
             this.Value = bytes.toInt();
-            BaseTypeQ.checkConstructArgs(this.Value, SVA.ByteLength);
+            checkConstructArgs(this.Value, SVA.ByteLength);
         }
     }
     toByte() {
@@ -242,7 +243,7 @@ const R32 = class {
     constructor(bytes, littleEndian = true) {
         if (bytes != undefined) {
             let tmp = bytes.toInt();
-            BaseTypeQ.checkConstructArgs(tmp, R32.ByteLength);
+            checkConstructArgs(tmp, R32.ByteLength);
 
             let arr = new Uint8Array(bytes);
             let dataView = new DataView(arr.buffer);
