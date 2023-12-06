@@ -114,13 +114,13 @@ const Iec104Packet = class {
 
         bytes = this.#readByteStream(this.#LEN_COT);
         tmp = [bytes.shift()].toUInt();
-        result.CauseOfTransfer = Enums.CotType.toString(tmp & Const.MASK_COT);
+        result.CauseOfTransfer ={Description: Enums.CotType.toString(tmp & Const.MASK_COT)};
 
 
-        result.IsTest = (tmp & (1 << 7)) > 0;
-        result.IsPositive = (tmp & (1 << 6)) > 0;
+        result.CauseOfTransfer.IsTest = (tmp & (1 << 7)) > 0;
+        result.CauseOfTransfer.IsPositive = (tmp & (1 << 6)) > 0;
         if (this.#LEN_COT == 2) {
-            result.OriginatorAddr = bytes.toUInt();
+            result.CauseOfTransfer.OriginatorAddr = bytes.toUInt();
         }
 
         bytes = this.#readByteStream(this.#LEN_ASDU_ADDR);
