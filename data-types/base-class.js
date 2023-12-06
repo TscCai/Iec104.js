@@ -245,9 +245,10 @@ const R32 = class {
             let tmp = bytes.toInt();
             checkConstructArgs(tmp, R32.ByteLength);
 
-            let arr = new Uint8Array(bytes);
-            let dataView = new DataView(arr.buffer);
-            this.Value = dataView.getFloat32(0, littleEndian);
+            // let arr = new Uint8Array(bytes);
+            // let dataView = new DataView(arr.buffer);
+            // this.Value = dataView.getFloat32(0, littleEndian);
+            this.Value = bytes.toFloat();
 
         }
     }
@@ -284,7 +285,7 @@ const BCR = class {
             let isOverflow = Boolean(sequenceFlag & this.#mask_isOverflow);
             let isInvalid = Boolean(sequenceFlag & this.#mask_isInvalid);
             let isAdjust = Boolean(sequenceFlag & this.#mask_isAdjust);
-            this.Value = { Count: count, IsOverflow: isOverflow, IsAdjust: isAdjust, IsInvalid: isInvalid };
+            this.Value = { Count: count, SequenceNumber: sqNum, IsOverflow: isOverflow, IsAdjust: isAdjust, IsInvalid: isInvalid };
         }
     }
     toByte() {
@@ -359,6 +360,105 @@ const SPE = class {
     }
 }
 
+const OCI = class {
+    static ByteLength = 1;
+    GeneralOut = false;
+    PhaseAOut = false;
+    PhaseBOut = false;
+    PhaseCOut = false;
+    ReservedBit = 0;
+    #mask_GC = 0x01;
+    #mask_CL1 = 0x02;
+    #mask_CL2 = 0x04;
+    #mask_CL3 = 0x08;
+    #mask_reserved = 0xF0;
+
+    constructor(bytes) {
+        if (bytes != undefined) {
+            this.RawValue = extractRawValue(bytes);
+            checkConstructArgs(this.RawValue, SPE.ByteLength);
+            this.GeneralOut = Boolean(this.RawValue & this.#mask_GC);
+            this.PhaseAOut = Boolean(this.RawValue & this.#mask_CL1);
+            this.PhaseBOut = Boolean(this.RawValue & this.#mask_CL2);
+            this.PhaseCOut = Boolean(this.RawValue & this.#mask_CL3);
+            this.ReservedBit = this.RawValue & this.#mask_reserved;
+        }
+    }
+
+    toBytes() {
+        throw new Error("Not implement");
+    }
+}
+
+const BSI = class {
+    static ByteLength = 1;
+    RawValue = 0;
+    Value = "";
+    constructor(bytes) {
+        if (bytes != undefined) {
+            this.RawValue = extractRawValue(bytes);
+            checkConstructArgs(this.RawValue, BSI.ByteLength);
+            this.Value = this.RawValue.toString(2);
+        }
+    }
+    toBytes() {
+        throw new Error("Not implement");
+    }
+}
+
+const FBP = class {
+    static ByteLength = 2;
+    RawValue = 0x55AA;
+    Value = 0x55AA;
+    constructor(bytes) {
+        if (bytes != undefined) {
+            if (Array.isArray(bytes) && bytes.length == 2 && bytes[0] == 0xAA && bytes[1] == 0x55) {
+                return;
+            }
+            if (bytes == 0x55AA) {
+                return;
+            }
+            throw new Error(`非法的测试字${bytes}`);
+        }
+    }
+    toByte() {
+        return [0xAA, 0x55]
+    }
+}
+
+const SCO = class {
+
+}
+
+const DCO=class{}
+const RCO=class{}
+const CP56Time2a=class{}
+const CP24Time2a = class{}
+const CP16Time2a=class{}
+const COI = class{}
+const QUI = class{}
+const QCC=class{}
+const QPM = class{}
+const QPA = class{}
+const QOC = class {}
+const QRP = class{}
+const FRQ=class{}
+const SRQ = class{}
+const SCQ = class{}
+const LSQ = class{}
+const AFQ = class{}
+const NOF = class{}
+const NOS = class{}
+const LOF = class{}
+const LOS = class{}
+const CHS = class{}
+const SOF = class{}
+const QOS = class{}
+const SCD = class{}
+
 module.exports = {
-    SIQ, DIQ, QDS, QDP, VTI, NVA, SVA, R32, BCR, SEP
+    SIQ, DIQ, QDS, QDP, VTI, NVA, SVA, R32, BCR, SEP,
+    SPE, OCI, BSI, FBP, SCO, DCO, RCO, CP56Time2a, CP24Time2a, CP16Time2a,
+    COI, QUI, QCC, QPM, QPA, QOC, QRP, FRQ, SRQ, SCQ,
+    LSQ, AFQ, NOF, NOS, LOF, LOS, CHS, SOF, QOS, SCD
 }

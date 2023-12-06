@@ -81,7 +81,7 @@ const M_ME_NA_1 = class extends BaseInformationObject {
     static Description = "Measured value, normalised value";
     static ByteLength = BaseType.NVA.ByteLength + BaseType.QDS.ByteLength;
     constructor(bytes) {
-        this.Value = {NVA:new BaseType.NVA(bytes),QDS:new BaseType.QDS(bytes)}
+        this.Value = { NVA: new BaseType.NVA(bytes).Value, Quality: new BaseType.QDS(bytes) }
         console.log("not implement");
     }
 }
@@ -564,5 +564,5 @@ module.exports = {
     0x6F: P_ME_NB_1, 0x70: P_ME_NC_1, 0x71: P_AC_NA_1, 0x78: F_FR_NA_1,
     0x79: F_SR_NA_1, 0x7A: F_SC_NA_1, 0x7B: F_LS_NA_1, 0x7C: F_AF_NA_1,
     0x7D: F_SG_NA_1, 0x7E: F_DR_TA_1,
-    
+
 }

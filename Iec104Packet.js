@@ -1,30 +1,76 @@
 require('./bytes-ext');
 const Enums = require('./enum');
 const Const = require('./constant');
-const InformationObjectFactory = require('./InformationObjectFactory');
 const InformationObject = require('./data-types/asdu-type');
+const InformationObjectFactory = require('./InformationObjectFactory');
+
 const Iec104Packet = class {
+    // Internal pointer to mark where the bytes are now.
     #streamPointer = 0;
 
-    #rawBytes = [];
+    /**
+     * @description Raw bytes store here, readonly
+     * @author Tsccai
+     * @date 2023-12-06
+     * @returns {Array}
+     */
     get RawBytes() { return this.#rawBytes; }
+    #rawBytes = [];
 
-    #apduLength = 0;   // 1B
+    /**
+     * @description APDU length, readonly
+     * @author Tsccai
+     * @date 2023-12-06
+     * @returns {Number}
+     */
     get ApduLength() { return this.#apduLength; }
+    #apduLength = 0;   // 1B
 
-    #frameFormat = "Unknown";    // Depends on Control Field
+    /**
+     * @description Frame format, readonly, can be one of I-Format, S-Format, U-Format
+     * @author Tsccai
+     * @date 2023-12-06
+     * @returns {String}
+     */
     get FrameFormat() { return this.#frameFormat; }
+    #frameFormat = "Unknown";    // Depends on Control Field
 
-    #controlField = {};   // 4B
+    /**
+     * @description Control Field object, readonly
+     * @author Tsccai
+     * @date 2023-12-06
+     * @returns {Object}
+     */
     get ControlField() { return this.#controlField; }
+    #controlField = {};   // 4B
 
+    // Length of COT, default as 2, may be 1
     #LEN_COT = 2;
+
+    // Length of ASDU address, default as 2, may be 1
     #LEN_ASDU_ADDR = 2;
+
+    // Length of Information object address, default as 3, may be 2
     #LEN_IO_ADDR = 3;
 
-    #asdu = {};
+    /**
+     * @description ASDU object, readonly
+     * @author Tsccai
+     * @date 2023-12-06
+     * @returns {Object}
+     */
     get Asdu() { return this.#asdu; }
+    #asdu = {};
 
+    /**
+     * @description Constructor of the class, it will verify the arguments, 
+     * initialize LEN_COT, LEN_ASDU_ADDR, LEN_IO_ADDR, 
+     * and then parse the packet bytes to Iec104Packet object
+     * @author Tsccai
+     * @date 2023-12-06
+     * @param {Array} bytes Packet array, made up by UInt8
+     * @param {Object} settings Example: {cotLength:2, asduAddrLength:2, ioAddrLength:3}
+     */
     constructor(bytes, settings) {
         for (let b of bytes) {
             if (b > 0xFF || b < 0) {
@@ -40,12 +86,24 @@ const Iec104Packet = class {
         this.#parsePacket();
     }
 
-    #readByteStream(length, offset = this.#streamPointer) {
-        let bytes = this.#rawBytes.readBytes(length, offset);
+    /**
+     * @description Read #rawBytes as stream form
+     * @author Tsccai
+     * @date 2023-12-06
+     * @param {Number} length The length will read, Integer
+     * @returns {Array}
+     */
+    #readByteStream(length) {
+        let bytes = this.#rawBytes.readBytes(length, this.#streamPointer);
         this.#streamPointer += length;
         return bytes;
     }
 
+    /**
+     * @description Parse the whole packet, invoke automatically in constructor()
+     * @author Tsccai
+     * @date 2023-12-06
+     */    
     #parsePacket() {
         let bytes = [];
 
@@ -62,7 +120,7 @@ const Iec104Packet = class {
             throw new Error("APDU长度与实际不符。");
         }
 
-        // Read Control fileds
+        // Read Control Fields
         bytes = this.#readByteStream(Const.LEN_CF);
         this.#controlField = this.#parseControlField(bytes);
 
@@ -71,6 +129,12 @@ const Iec104Packet = class {
         }
     }
 
+    /**
+     * @description Parse the Control Field of the packet, invoke in #parsePacket()
+     * @author Tsccai
+     * @date 2023-12-06
+     * @param {Array} bytes The Control Field byte array
+     */    
     #parseControlField(bytes) {
         // Check flag1 and flag2, the 1st and 3rd byte
         let flag1 = bytes[0] & Const.MASK_CF;
@@ -96,6 +160,11 @@ const Iec104Packet = class {
         }
     }
 
+    /**
+     * @description Parse the ASDU of the packet, invoke in #parsePacket()
+     * @author Tsccai
+     * @date 2023-12-06
+     */    
     #parseAsdu() {
         let result = {};
         result.toString = function () { return result }
@@ -105,7 +174,7 @@ const Iec104Packet = class {
         result.Type = {
             RawBytes: bytes, Description: InformationObjectFactory.getDescription(bytes)
         };
-     
+
 
         bytes = this.#readByteStream(Const.LEN_NUM_OF_OBJECT);
         let tmp = bytes.toUInt();
@@ -114,7 +183,7 @@ const Iec104Packet = class {
 
         bytes = this.#readByteStream(this.#LEN_COT);
         tmp = [bytes.shift()].toUInt();
-        result.CauseOfTransfer ={Description: Enums.CotType.toString(tmp & Const.MASK_COT)};
+        result.CauseOfTransfer = { Description: Enums.CotType.toString(tmp & Const.MASK_COT) };
 
 
         result.CauseOfTransfer.IsTest = (tmp & (1 << 7)) > 0;
