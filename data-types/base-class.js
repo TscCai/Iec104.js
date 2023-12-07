@@ -1,4 +1,4 @@
-require('../bytes-ext')
+//require('../bytes-ext')
 
 function checkConstructArgs(value, length = 1) {
     if (!Number.isInteger(value) || value > (1 << (8 * length)) - 1) {
@@ -427,34 +427,99 @@ const FBP = class {
 }
 
 const SCO = class {
+    static ByteLength = 1;
+    RawValue = 0;
+    IsSelect = false;
+    #mask_value = 0x01;
+    ReservedBit = 0;
+    #mask_reserved = 0x02;
+    #mask_qoc = 0xFC;
+    QOC = {}
+    constructor(bytes) {
 
+        this.RawValue = extractRawValue(bytes);
+        checkConstructArgs(this.RawValue, SCO.ByteLength);
+        this.Value = Boolean(this.RawValue & this.#mask_value);
+        this.ReservedBit = this.RawValue & this.#mask_reserved;
+
+    }
+    toBytes() {
+        throw new Error("Not implement.");
+    }
 }
 
-const DCO=class{}
-const RCO=class{}
-const CP56Time2a=class{}
-const CP24Time2a = class{}
-const CP16Time2a=class{}
-const COI = class{}
-const QUI = class{}
-const QCC=class{}
-const QPM = class{}
-const QPA = class{}
-const QOC = class {}
-const QRP = class{}
-const FRQ=class{}
-const SRQ = class{}
-const SCQ = class{}
-const LSQ = class{}
-const AFQ = class{}
-const NOF = class{}
-const NOS = class{}
-const LOF = class{}
-const LOS = class{}
-const CHS = class{}
-const SOF = class{}
-const QOS = class{}
-const SCD = class{}
+
+
+
+const DCO = class { }
+const RCO = class { }
+const CP56Time2a = class { }
+const CP24Time2a = class { }
+const CP16Time2a = class { }
+const COI = class { }
+const QUI = class { }
+const QCC = class { }
+const QPM = class { }
+const QPA = class { }
+const QOC = class {
+    #mask_s_or_e = 0x01;
+    #mask_qu = 0x3E;
+
+    RawValue = 0;
+    IsSelect = false;
+    QU = 0;
+
+    Command = "";
+    QUString = "";
+    Value = this.toString();
+
+    constructor(bytes, bit_offset = 0) {
+        if (bytes != undefined) {
+            if (bit_offset > 0) {
+                this.#mask_s_or_e <<= bit_offset;
+                this.#mask_qu <<= bit_offset;
+            }
+            this.RawValue = extractRawValue(bytes);
+            this.IsSelected = Boolean(this.RawValue & this.#mask_s_or_e);
+            this.QU = (this.RawValue & this.#mask_qu) >> 1;
+            this.Command = this.IsSelect ? "Select" : "Execute";
+            switch (this.QU) {
+                case 0: this.QUString = "No more define."; break;
+                case 1: this.QUString = "Short pulse remain time."; break;
+                case 2: this.QUString = "Long pulse remain time."; break;
+                case 3: this.QUString = "Continuous output."; break;
+                case this.QU >= 4 || this.QU <= 8: this.QUString = "Reserved for this standard."; break;
+                case this.QU >= 9 || this.QU <= 15: this.QUString = "Reserved for other standard."; break;
+                case this.QU >= 16 || this.QU <= 31: this.QUString = "Reserved for special."; break;
+
+            }
+        }
+
+    }
+    toBytes() {
+        throw new Error("Not implement");
+    }
+    toString() {
+        let result = `{Select Or Execute: ${this.Command}, QU: ${this.QUString}}`;
+        return result;
+    }
+
+
+}
+const QRP = class { }
+const FRQ = class { }
+const SRQ = class { }
+const SCQ = class { }
+const LSQ = class { }
+const AFQ = class { }
+const NOF = class { }
+const NOS = class { }
+const LOF = class { }
+const LOS = class { }
+const CHS = class { }
+const SOF = class { }
+const QOS = class { }
+const SCD = class { }
 
 module.exports = {
     SIQ, DIQ, QDS, QDP, VTI, NVA, SVA, R32, BCR, SEP,

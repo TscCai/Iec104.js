@@ -1,5 +1,5 @@
 const BaseType = require('./base-class');
-require('../bytes-ext')
+//require('../bytes-ext')
 const BaseInformationObject = class {
     static TID = 0x00;
     static Description = 'Abstract information object';
