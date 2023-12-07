@@ -9,18 +9,18 @@ const input = "68 34 5A 14 7C 00 0B 07 03 00 0C 00 10 30 00 BE 09 00 11 30 00 90
 try {
     const packet = new Iec104Packet(input.toBytes(), { cotLength: 2, asduAddrLength: 2, ioAddrLength: 3 });
 
-    packet.ApduLength = 2333;
-    console.log(`Length: ${packet.ApduLength}`);
+    // packet.ApduLength = 2333;
+    // console.log(`Length: ${packet.ApduLength}`);
 
-    packet.FrameFormat = "HHH";
-    console.log(packet.FrameFormat);
+    // packet.FrameFormat = "HHH";
+    // console.log(packet.FrameFormat);
 
-    packet.ControlField = {};
-    console.log(packet.ControlField);
+    // packet.ControlField = {};
+    // console.log(packet.ControlField);
 
-    packet.Asdu = { dog: "Spike" }
-    console.log(packet.Asdu);
-
+    // packet.Asdu = { dog: "Spike" }
+    // console.log(packet.Asdu);
+    console.log(packet.toString())
 
 
 }

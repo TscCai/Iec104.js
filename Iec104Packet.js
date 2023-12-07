@@ -86,6 +86,17 @@ const Iec104Packet = class {
         this.#parsePacket();
     }
 
+    toString(){
+        let str  = 
+        `
+        APDU Length: ${this.ApduLength}, Frame Format: ${this.FrameFormat}
+        CF: {${this.ControlField}}
+        ASDU:{ 
+           COT: ${this.Asdu.CauseOfTransfer.Description} 
+        }`
+        return str;
+    }
+
     /**
      * @description Read #rawBytes as stream form
      * @author Tsccai
