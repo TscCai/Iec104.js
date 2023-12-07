@@ -88,12 +88,11 @@ const Iec104Packet = class {
 
     toString(){
         let str  = 
-        `
-        APDU Length: ${this.ApduLength}, Frame Format: ${this.FrameFormat}
-        CF: {${this.ControlField}}
-        ASDU:{ 
-           COT: ${this.Asdu.CauseOfTransfer.Description} 
-        }`
+        `APDU Length: ${this.ApduLength}, Frame Format: ${this.FrameFormat}\n`+
+        `CF: {${this.ControlField}}\n`+
+        `ASDU:{ \n`+
+        `    COT: ${this.Asdu.CauseOfTransfer.Description} \n`+
+        `}`
         return str;
     }
 

@@ -56,6 +56,7 @@ const BaseTypeQ = class {
 
 }
 
+// No.1
 const SIQ = class extends BaseTypeQ {
     static ByteLength = 1;
     #mask_value = 0x01;
@@ -89,16 +90,24 @@ const DIQ = class extends BaseTypeQ {
     #mask_value = 0x03;
     #mask_reserved = 0x0C;
 
-    #Enums = require('./enum');
 
-    Value = this.#Enums.DPI.NotSureOrMidState;
+
+    Value = { IsOpen: false, IsClosed: false }
     ReservedBit = 0;
 
 
     constructor(bytes) {
         super(bytes);
         checkConstructArgs(this.RawValue, DIQ.ByteLength);
-        this.Value = this.RawValue & this.#mask_value;
+        let tmp = this.RawValue & this.#mask_value;
+        switch (tmp) {
+            case 1: this.Value.IsOpen = true; break;
+            case 2: this.Value.IsClosed = true; break;
+            case 3:
+                this.Value.IsClosed = true;
+                this.Value.IsOpen = true;
+                break;
+        }
         this.ReservedBit = this.RawValue & this.#mask_reserved;
 
     }
@@ -174,6 +183,7 @@ const QDP = class extends BaseTypeQ {
     }
 }
 
+// No.5
 const VTI = class {
     static ByteLength = 1;
     Value = 0;
@@ -293,6 +303,7 @@ const BCR = class {
     }
 }
 
+// No.10
 const SEP = class extends BaseTypeQ {
     static ByteLength = 1;
     #mask_value = 0x03;
@@ -426,63 +437,266 @@ const FBP = class {
     }
 }
 
+//No.15
 const SCO = class {
     static ByteLength = 1;
     RawValue = 0;
-    IsSelect = false;
-    #mask_value = 0x01;
+    ToClose = false;
+    ToOpen = !this.ToClose;
+
+    #mask_cmd = 0x01;
+    #cmd = "";
+
     ReservedBit = 0;
     #mask_reserved = 0x02;
     #mask_qoc = 0xFC;
+
     QOC = {}
     constructor(bytes) {
-
         this.RawValue = extractRawValue(bytes);
         checkConstructArgs(this.RawValue, SCO.ByteLength);
-        this.Value = Boolean(this.RawValue & this.#mask_value);
+        this.ToClose = Boolean(this.RawValue & this.#mask_cmd);
+        this.ToOpen = !this.ToClose;
+        this.#cmd = this.ToClose ? "To Close" : "To Open";
         this.ReservedBit = this.RawValue & this.#mask_reserved;
-
+        this.QOC = new QOC(this.RawValue & this.#mask_qoc);
     }
     toBytes() {
         throw new Error("Not implement.");
     }
+    toString() {
+        return `{Command: ${this.#cmd}, ReservedBit:${this.ReservedBit},${this.QOC.toString()}`;
+    }
 }
 
+const DCO = class {
+    static ByteLength = 1;
+    RawValue = 0;
+    #mask_cmd = 0x03;
+    ToClose = false;
+    ToOpen = false;
+    NotAllowed = false;
+
+    #mask_qoc = 0xFC;
+    #cmd = "";
+    QOC = {}
+    constructor(bytes) {
+        this.RawValue = extractRawValue(bytes);
+        checkConstructArgs(this.RawValue, DCO.ByteLength);
+        let tmp = this.RawValue & this.#mask_cmd;
+        switch (tmp) {
+            case 0:
+            case 3:
+                this.NotAllowed = true;
+                this.#cmd = "Not Allowed.";
+                break;
+            case 1:
+                this.ToOpen = true;
+                this.#cmd = "To Open.";
+                break;
+            case 2:
+                this.ToClose = true;
+                this.#cmd = "To Close.";
+                break;
+        }
+        this.QOC = new QOC(this.RawValue & this.#mask_qoc);
+    }
+    toBytes() {
+        throw new Error("Not implement.");
+    }
+    toString() {
+        return `{Command: ${this.#cmd},${this.QOC.toString()}`;
+    }
+}
+const RCO = class {
+    static ByteLength = 1;
+    RawValue = 0;
+    #mask_cmd = 0x03;
+    UpShift = false;
+    DownShift = false;
+    NotAllowed = false;
+
+    #mask_qoc = 0xFC;
+    #cmd = "";
+    QOC = {}
+    constructor(bytes) {
+        this.RawValue = extractRawValue(bytes);
+        checkConstructArgs(this.RawValue, RCO.ByteLength);
+        let tmp = this.RawValue & this.#mask_cmd;
+        switch (tmp) {
+            case 0:
+            case 3:
+                this.NotAllowed = true;
+                this.#cmd = "Not Allowed.";
+                break;
+            case 1:
+                this.DownShift = true;
+                this.#cmd = "Down Shift.";
+                break;
+            case 2:
+                this.UpShift = true;
+                this.#cmd = "Up Shift.";
+                break;
+        }
+        this.QOC = new QOC(this.RawValue & this.#mask_qoc);
+    }
+    toBytes() {
+        throw new Error("Not implement.");
+    }
+    toString() {
+        return `{Command: ${this.#cmd},${this.QOC.toString()}`;
+    }
+}
+const CP56Time2a = class extends CP24Time2a {
+    static ByteLength = 7;
 
 
+    Hour = 0;
+    #mask_hour = 0x1F;
 
-const DCO = class { }
-const RCO = class { }
-const CP56Time2a = class { }
-const CP24Time2a = class { }
-const CP16Time2a = class { }
+    DayOfMonth = 0;
+    #mask_dom = 0x1F;
+
+    DayOfWeek = 0;
+    #mask_dow = 0xE0;
+
+    Month = 0;
+    #mask_month = 0x0F;
+
+    Year = 0;
+    #mask_year = 0x7F;
+
+
+    IsSummerTime = false;
+    #mask_su = 0x80;
+
+    Reserved2 = 0;
+    #mask_res2 = 0x60;
+    Reserved3 = 0;
+    #mask_res3 = 0xF0;
+    Reserved4 = 0;
+    #mask_res4 = 0x80;
+
+    constructor(bytes) {
+        let offset = 3;
+        super(bytes.readBytes(offset, 0));
+
+        let tmp = bytes.readBytes(1, offset);
+        offset += 1;
+        this.IsSummerTime = Boolean(tmp[0] & this.#mask_su);
+        this.Reserved2 = tmp[0] & this.#mask_res2;
+        this.Hour = tmp[0] & this.#mask_hour;
+        this.DayOfWeek = (tmp[0] & this.#mask_dow) >> 5;
+        this.DayOfMonth = tmp[0] & this.#mask_dom;
+
+        tmp = bytes.readBytes(1, offset);
+        offset += 1;
+        this.Reserved3 = tmp[0] & this.#mask_res3;
+        this.Month = tmp[0] & this.#mask_month;
+
+        tmp = bytes.readBytes(1, offset);
+        offset += 1;
+        this.Reserved4 = tmp[0] & this.#mask_res4;
+        this.Year = tmp[0] & this.#mask_year;
+
+    }
+    toBytes() {
+        throw new Error("Not implement");
+    }
+    toString() {
+
+    }
+
+
+}
+const CP24Time2a = class extends CP16Time2a {
+    static ByteLength = 3;
+    Minute = 0;
+    #mask_minute = 0x3F;
+
+    IsInvalid = false;
+    #mask_invalid = 0x80;
+
+    Reserved1 = 0;
+    #mask_res1 = 0x40;
+
+    TimeType = "";
+
+    constructor(bytes) {
+        let offset = 2;
+        super(bytes.readBytes(offset, 0));
+
+        let tmp = bytes.readBytes(2, offset);
+        offset += 2;
+        this.Millisecond = tmp.toUInt();
+
+        tmp = bytes.readBytes(1, offset);
+        offset += 1;
+        this.IsInvalid = Boolean(tmp[0] & this.#mask_invalid);
+        this.Reserved1 = tmp[0] & this.#mask_res1;
+        this.TimeType = Boolean(this.Reserved1) ? "Substituted Time" : "Real Time";
+        this.Minute = tmp[0] & this.#mask_minute;
+
+    }
+    toBytes() {
+        throw new Error("Not implement");
+    }
+    toString() {
+
+    }
+
+
+}
+
+// No.20
+const CP16Time2a = class {
+    static ByteLength = 2;
+
+    Millisecond = 0;
+
+
+    constructor(bytes) {
+        let offset = 0;
+        let tmp = bytes.readBytes(2, offset);
+        offset += 2;
+        this.Millisecond = tmp.toUInt();
+
+    }
+    toBytes() {
+        throw new Error("Not implement");
+    }
+    toString() {
+
+    }
+
+
+}
 const COI = class { }
 const QUI = class { }
 const QCC = class { }
 const QPM = class { }
+
+// No.25
 const QPA = class { }
 const QOC = class {
-    #mask_s_or_e = 0x01;
-    #mask_qu = 0x3E;
+    #mask_s_or_e = 0x80;
+    #mask_qu = 0x7C;
 
     RawValue = 0;
     IsSelect = false;
+    IsExecute = false;
     QU = 0;
-
-    Command = "";
     QUString = "";
+    #cmd = "";
     Value = this.toString();
 
-    constructor(bytes, bit_offset = 0) {
-        if (bytes != undefined) {
-            if (bit_offset > 0) {
-                this.#mask_s_or_e <<= bit_offset;
-                this.#mask_qu <<= bit_offset;
-            }
-            this.RawValue = extractRawValue(bytes);
+    constructor(uint) {
+        if (uint != undefined) {
+            this.RawValue = uint;
             this.IsSelected = Boolean(this.RawValue & this.#mask_s_or_e);
+            this.IsExecute = !this.IsSelect;
+            this.#cmd = this.IsSelect ? "Select" : "Execute";
             this.QU = (this.RawValue & this.#mask_qu) >> 1;
-            this.Command = this.IsSelect ? "Select" : "Execute";
             switch (this.QU) {
                 case 0: this.QUString = "No more define."; break;
                 case 1: this.QUString = "Short pulse remain time."; break;
@@ -500,7 +714,7 @@ const QOC = class {
         throw new Error("Not implement");
     }
     toString() {
-        let result = `{Select Or Execute: ${this.Command}, QU: ${this.QUString}}`;
+        let result = `{Select Or Execute: ${this.#cmd}, QU: ${this.QUString}}`;
         return result;
     }
 
@@ -509,11 +723,15 @@ const QOC = class {
 const QRP = class { }
 const FRQ = class { }
 const SRQ = class { }
+
+// No.30
 const SCQ = class { }
 const LSQ = class { }
 const AFQ = class { }
 const NOF = class { }
 const NOS = class { }
+
+// No.35
 const LOF = class { }
 const LOS = class { }
 const CHS = class { }
