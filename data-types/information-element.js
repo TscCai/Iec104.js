@@ -885,8 +885,39 @@ const QOC = class {
 
 
 }
-const QRP = class { }
-const FRQ = class { }
+const QRP = class {
+    static ByteLength = 1;
+    Value = 0;
+    constructor(bytes) {
+        if (bytes != undefined) {
+            if (Array.isArray(bytes)) {
+                bytes = bytes[0];
+            }
+            checkConstructArgs(bytes);
+            this.Value = bytes;
+        }
+    }
+    toBytes() {
+        throw new Error("Not implement");
+    }
+    toString() {
+        let reset = "";
+        switch (this.Value) {
+            case 0: reset = "Not used"; break;
+            case 1: reset = "General reset"; break;
+            case 2: reset = "Information with timestamp to be handled in reset buffer"; break;
+            case (this.Value >= 3 && this.Value <= 127):
+                reset = "Reserved for compatibility"; break;
+            case (this.Request >= 128 || this.Request <= 255):
+                reset = "Reserved for special"; break;
+        }
+        result = `{Reset process: "${reset}"}`
+        return result;
+    }
+}
+const FRQ = class {
+    
+ }
 const SRQ = class { }
 
 // No.30

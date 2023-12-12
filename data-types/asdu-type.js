@@ -1,4 +1,4 @@
-const BaseType = require('./base-class');
+const BaseType = require('./information-element');
 //require('../bytes-ext')
 const BaseInformationObject = class {
     static TID = 0x00;
