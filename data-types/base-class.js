@@ -671,8 +671,70 @@ const CP16Time2a = class {
 
 
 }
-const COI = class { }
-const QUI = class { }
+const COI = class {
+    static ByteLength = 1;
+    RawValue = 0;
+    ReasonOfInit = 'Local Close';
+    #mask_roi = 0x7F;
+    IsLocalParamChanged = false;
+    #mask_paramChanged = 0x80;
+
+    constructor(bytes) {
+        this.RawValue = extractRawValue(bytes);
+        checkConstructArgs(this.RawValue, COI.ByteLength);
+        this.IsLocalParamChanged = Boolean(this.RawValue & this.#mask_paramChanged);
+        const reason = this.RawValue & this.#mask_roi;
+        switch (reason) {
+            case 0:
+                this.ReasonOfInit = 'Local Power Close';
+                break;
+            case 1:
+                this.ReasonOfInit = 'Local Reset Manually';
+                break;
+            case reason >= 31 || reason <= 127:
+                this.ReasonOfInit = 'Reserved';
+                break;
+            default:
+                throw new Error('Invalid value of COI at constructor');
+        }
+    }
+    toBytes() {
+        throw new Error("Not implement.");
+    }
+    toString() {
+        return `{Reason of Init: ${this.ReasonOfInit}, Is Local Parameter Changed:${this.IsLocalParamChanged}}`;
+    }
+}
+const QUI = class {
+    static ByteLength = 1;
+    RawValue = 0;
+    Call = 'Unused';
+    #group_num = -1;
+    constructor(bytes) {
+        this.RawValue = extractRawValue(bytes);
+        checkConstructArgs(this.RawValue, QUI.ByteLength);
+        switch (this.RawValue) {
+            case 0:
+                this.Call = 'Unused';
+                break;
+            case this.RawValue >= 1 && this.RawValue <= 19:
+            case this.RawValue >= 37 && this.RawValue <= 63:
+            case this.RawValue >= 64 && this.RawValue <= 255:
+                this.Call = 'Reserved';
+            case 20:
+                this.Call = 'General';
+                break;
+            case this.RawValue >= 21 && this.RawValue <= 36:
+                this.Call = `Group ${this.RawValue - 10}`
+        }
+    }
+    toBytes() {
+        throw new Error("Not implement.");
+    }
+    toString() {
+        return `{Category of Call: ${this.Call}}`;
+    }
+}
 const QCC = class { }
 const QPM = class { }
 
