@@ -9,6 +9,8 @@ const BaseInformationObject = class {
 
     }
 }
+
+// According to IEC-60870-5-101 Chapter 7.3.1
 const M_SP_NA_1 = class extends BaseInformationObject {
     static TID = 0x01;
     static Description = 'Single-point information';
@@ -296,7 +298,7 @@ const C_RC_NA_1 = class extends BaseInformationObject {
 }
 const C_SE_NA_1 = class extends BaseInformationObject {
     static TID = 0x30;
-    static Description = "Set-point Command, normalised value";
+    static Description = "Set-point Command, normalized value";
     static ByteLength = BaseType.NVA.ByteLength + 1;
     constructor(bytes) {
         console.log("not implement");
@@ -414,6 +416,7 @@ const C_RD_NA_1 = class extends BaseInformationObject {
         console.log("not implement");
     }
 }
+// According to IEC-60870-5-101 Chapter 7.3.2
 const C_CS_NA_1 = class extends BaseInformationObject {
     static TID = 0x67;
     static Description = "Clock synchronisation command";

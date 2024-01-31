@@ -32,7 +32,7 @@ const BaseTypeQ = class {
 
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = extractRawValue(bytes);
+            this.RawValue = this.extractRawValue(bytes);
 
             //checkConstructArgs(bytes);
 
@@ -55,7 +55,7 @@ const BaseTypeQ = class {
     }
 
 }
-
+// According to IEC 60870-5-101 Chapter 7.2.6
 // No.1
 const SIQ = class extends BaseTypeQ {
     static ByteLength = 1;
@@ -142,7 +142,7 @@ const QDS = class {
 
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = extractRawValue(bytes);
+            this.RawValue = this.extractRawValue(bytes);
             checkConstructArgs(this.RawValue, QDS.ByteLength);
 
             this.Invalid = Boolean(this.RawValue & this.#mask_invalid);
@@ -194,7 +194,7 @@ const VTI = class {
 
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = extractRawValue(bytes);
+            this.RawValue = this.extractRawValue(bytes);
             checkConstructArgs(this.RawValue, VTI.ByteLength);
             this.Value = this.RawValue & this.#mask_value;
             this.Transient = this.RawValue & this.#mask_transient;
@@ -355,7 +355,7 @@ const SPE = class {
 
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = extractRawValue(bytes);
+            this.RawValue = this.extractRawValue(bytes);
             checkConstructArgs(this.RawValue, SPE.ByteLength);
             this.GeneralStart = Boolean(this.RawValue & this.#mask_GS);
             this.PhaseAStart = Boolean(this.RawValue & this.#mask_SL1);
@@ -386,7 +386,7 @@ const OCI = class {
 
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = extractRawValue(bytes);
+            this.RawValue = this.extractRawValue(bytes);
             checkConstructArgs(this.RawValue, SPE.ByteLength);
             this.GeneralOut = Boolean(this.RawValue & this.#mask_GC);
             this.PhaseAOut = Boolean(this.RawValue & this.#mask_CL1);
@@ -407,7 +407,7 @@ const BSI = class {
     Value = "";
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = extractRawValue(bytes);
+            this.RawValue = this.extractRawValue(bytes);
             checkConstructArgs(this.RawValue, BSI.ByteLength);
             this.Value = this.RawValue.toString(2);
         }
@@ -453,7 +453,7 @@ const SCO = class {
 
     QOC = {}
     constructor(bytes) {
-        this.RawValue = extractRawValue(bytes);
+        this.RawValue = this.extractRawValue(bytes);
         checkConstructArgs(this.RawValue, SCO.ByteLength);
         this.ToClose = Boolean(this.RawValue & this.#mask_cmd);
         this.ToOpen = !this.ToClose;
@@ -481,7 +481,7 @@ const DCO = class {
     #cmd = "";
     QOC = {}
     constructor(bytes) {
-        this.RawValue = extractRawValue(bytes);
+        this.RawValue = this.extractRawValue(bytes);
         checkConstructArgs(this.RawValue, DCO.ByteLength);
         let tmp = this.RawValue & this.#mask_cmd;
         switch (tmp) {
@@ -520,7 +520,7 @@ const RCO = class {
     #cmd = "";
     QOC = {}
     constructor(bytes) {
-        this.RawValue = extractRawValue(bytes);
+        this.RawValue = this.extractRawValue(bytes);
         checkConstructArgs(this.RawValue, RCO.ByteLength);
         let tmp = this.RawValue & this.#mask_cmd;
         switch (tmp) {
@@ -916,24 +916,311 @@ const QRP = class {
     }
 }
 const FRQ = class {
-    
- }
-const SRQ = class { }
+    static ByteLength = 1;
+    #mask_ready = 0x80;
+    #mask_reserved = 0x7F;
+    RawValue = 0;
+    #reservedBit = 0;
+    Value = '';
+    constructor(bytes) {
+        if (bytes != undefined) {
+            if (Array.isArray(bytes)) {
+                bytes = bytes[0];
+            }
+            checkConstructArgs(bytes);
+            this.RawValue = bytes;
+            const flag = Boolean(this.RawValue & this.#mask_ready);
+            if (flag) {
+                this.Value = 'Positive acknowledge of select, request or stop'
+            }
+            else {
+                this.Value = 'Negative acknowledge of select, request or stop'
+            }
+            this.#reservedBit = this.RawValue & this.#mask_reserved;
+        }
+    }
+    toBytes() {
+        throw new Error('Not implement');
+    }
+    toString() {
+        let appendix = '';
+        if (this.#reservedBit > 0) {
+            appendix = `, Reserved Bit: ${this.#reservedBit}`;
+        }
+        return `{Value:${this.Value}${appendix}}`
+    }
+}
+const SRQ = class {
+    static ByteLength = 1;
+    #mask_ready = 0x80;
+    #mask_reserved = 0x7F;
+    RawValue = 0;
+    #reservedBit = 0;
+    Value = '';
+    constructor(bytes) {
+        if (bytes != undefined) {
+            if (Array.isArray(bytes)) {
+                bytes = bytes[0];
+            }
+            checkConstructArgs(bytes);
+            this.RawValue = bytes;
+            const flag = Boolean(this.RawValue & this.#mask_ready);
+            if (flag) {
+                this.Value = 'Section ready'
+            }
+            else {
+                this.Value = 'Section not ready'
+            }
+            this.#reservedBit = this.RawValue & this.#mask_reserved;
+        }
+    }
+    toBytes() {
+        throw new Error('Not implement');
+    }
+    toString() {
+        let appendix = '';
+        if (this.#reservedBit > 0) {
+            appendix = `, Reserved Bit: ${this.#reservedBit}`;
+        }
+        return `{Value:${this.Value}${appendix}}`
+    }
+}
 
 // No.30
-const SCQ = class { }
-const LSQ = class { }
-const AFQ = class { }
-const NOF = class { }
-const NOS = class { }
+const SCQ = class {
+    static ByteLength = 1;
+    #mask_select = 0x0F;
+
+    RawValue = 0;
+    Value = '';
+
+    constructor(bytes) {
+        if (bytes != undefined) {
+            if (Array.isArray(bytes)) {
+                bytes = bytes[0];
+            }
+            checkConstructArgs(bytes);
+            this.RawValue = bytes;
+
+            const low = this.RawValue & this.#mask_select;
+            const high = this.RawValue >> 4;
+            switch (low) {
+                case 0: this.Value = 'Default operation'; break;
+                case 1: this.Value = 'Select file'; break;
+                case 2: this.Value = 'Request file'; break;
+                case 3: this.Value = 'Stop active file'; break;
+                case 4: this.Value = 'Delete file'; break;
+                case 5: this.Value = 'Select section'; break;
+                case 6: this.Value = 'Request section'; break;
+                case 7: this.Value = 'Stop active section'; break;
+                case low >= 8 && low <= 15: this.Value = 'Reserved'; break;
+            }
+            this.Value += ';';
+            switch (high) {
+                case 0: this.Value += 'Default'; break;
+                case 1: this.Value += 'No request space'; break;
+                case 2: this.Value += 'CRC error'; break;
+                case 3: this.Value += 'Non-supposed communication service'; break;
+                case 4: this.Value += 'Non-supposed file name'; break;
+                case 5: this.Value += 'Non-supposed section name'; break;
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                case 15: this.Value += 'Reserved'; break;
+            }
+        }
+    }
+    toBytes() {
+        throw new Error('');
+    }
+    toString() {
+        return `{SelectAndCall:${this.Value}}`;
+    }
+}
+const LSQ = class {
+    static ByteLength = 1;
+    RawValue = 0;
+    Value = '';
+
+    constructor(bytes) {
+        if (bytes != undefined) {
+            if (Array.isArray(bytes)) {
+                bytes = bytes[0];
+            }
+            checkConstructArgs(bytes);
+            this.RawValue = bytes;
+
+            switch (this.RawValue) {
+                case 0: this.Value = 'Not used'; break;
+                case 1: this.Value = 'File transmission without stop active'; break;
+                case 2: this.Value = 'File transmission with stop active'; break;
+                case 3: this.Value = 'Section transmission without stop active'; break;
+                case 4: this.Value = 'Section transmission with stop active'; break;
+                case this.RawValue >= 5 && this.RawValue <= 255:
+                    this.Value = 'Reserved'; break;
+            }
+        }
+    }
+    toBytes() {
+        throw new Error('');
+    }
+    toString() {
+        return `{LastSection:${this.Value}}`;
+    }
+}
+const AFQ = class {
+    static ByteLength = 1;
+    #mask_low = 0x0F;
+
+    RawValue = 0;
+    Value = '';
+
+    constructor(bytes) {
+        if (bytes != undefined) {
+            if (Array.isArray(bytes)) {
+                bytes = bytes[0];
+            }
+            checkConstructArgs(bytes);
+            this.RawValue = bytes;
+
+            const low = this.RawValue & this.#mask_low;
+            const high = this.RawValue >> 4;
+            switch (low) {
+                case 0: this.Value = 'Default'; break;
+                case 1: this.Value = 'Positive ack of file transmission'; break;
+                case 2: this.Value = 'Negative ack of file transmission'; break;
+                case 3: this.Value = 'Positive ack of section transmission'; break;
+                case 4: this.Value = 'Negative ack of section transmission'; break;
+                case low >= 5 && low <= 15: this.Value = 'Reserved'; break;
+            }
+            this.Value += ';';
+            switch (high) {
+                case 0: this.Value += 'Default'; break;
+                case 1: this.Value += 'No request space'; break;
+                case 2: this.Value += 'CRC error'; break;
+                case 3: this.Value += 'Non-supposed communication service'; break;
+                case 4: this.Value += 'Non-supposed file name'; break;
+                case 5: this.Value += 'Non-supposed section name'; break;
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                case 15: this.Value += 'Reserved'; break;
+            }
+        }
+    }
+    toBytes() {
+        throw new Error('');
+    }
+    toString() {
+        return `{FileOrSectionAck:${this.Value}}`;
+    }
+}
+const NOF = class {
+    ByteLength = 2;
+    RawValue = 0;
+    Value = '';
+    constructor(bytes) {
+        if (bytes != undefined) {
+            this.RawValue = this.extractRawValue(bytes);
+        }
+        if (this.RawValue > 0) {
+            this.Value = this.RawValue;
+        }
+
+    }
+    toString() {
+        return `{File name:${this.Value}}`;
+    }
+}
+const NOS = class {
+    static ByteLength = 1;
+    RawValue = 0;
+    Value = '';
+    constructor(bytes) {
+        if (bytes != undefined) {
+            this.RawValue = this.extractRawValue(bytes);
+        }
+        if (this.RawValue > 0) {
+            this.Value = this.RawValue;
+        }
+    }
+    toString() {
+        return `{Section name:${this.Value}}`;
+    }
+}
 
 // No.35
-const LOF = class { }
-const LOS = class { }
-const CHS = class { }
-const SOF = class { }
-const QOS = class { }
-const SCD = class { }
+const LOF = class {
+    static ByteLength = 3;
+    RawValue = 0;
+    Value = '';
+    constructor(bytes) {
+        if (bytes != undefined) {
+            this.RawValue = this.extractRawValue(bytes);
+        }
+        if (this.RawValue > 0) {
+            this.Value = this.RawValue;
+        }
+
+    }
+    toString() {
+        return `{Length of file:${this.Value}}`;
+    }
+}
+const LOS = class {
+    static ByteLength = 1;
+    RawValue = 0;
+    Value = '';
+    constructor(bytes) {
+        if (bytes != undefined) {
+            this.RawValue = this.extractRawValue(bytes);
+        }
+        if (this.RawValue > 0) {
+            this.Value = this.RawValue;
+        }
+
+    }
+    toString() {
+        return `{Length of section:${this.Value}}`;
+    }
+}
+const CHS = class {
+    static ByteLength = 1;
+    RawValue = 0;
+    Value = '';
+    constructor(bytes) {
+        if (bytes != undefined) {
+            this.RawValue = this.extractRawValue(bytes);
+        }
+        if (this.RawValue > 0) {
+            this.Value = this.RawValue;
+        }
+
+    }
+    toString() {
+        return `{CRC:${this.Value}}`;
+    }
+}
+const SOF = class {
+    static ByteLength = 1;
+    constructor(bytes) {
+        throw new Error('not implement');
+    }
+}
+const QOS = class {
+    static ByteLength = 1;
+    constructor(bytes) {
+        throw new Error('not implement');
+    }
+}
+const SCD = class {
+    static ByteLength = 1;
+    constructor(bytes) {
+        throw new Error('not implement');
+    }
+}
 
 module.exports = {
     SIQ, DIQ, QDS, QDP, VTI, NVA, SVA, R32, BCR, SEP,
