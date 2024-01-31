@@ -1,7 +1,7 @@
 //require('../bytes-ext')
 
 function checkConstructArgs(value, length = 1) {
-    if (!Number.isInteger(value) || value > (1 << (8 * length)) - 1) {
+    if (!Number.isInteger(value) || value > (1 << (8 * length)) - 1 || value < 0) {
         throw new Error(`非法的参数，参数类型应为${length * 8}位UInt`);
     }
     return true;
@@ -44,7 +44,7 @@ const BaseTypeQ = class {
 
     }
 
-    toByte() {
+    toBytes() {
         return (
             (this.Invalid << 7) | (this.NotTopical << 6) | (this.Substituted << 5) | (this.Blocked << 4) | this.ReservedBit
         );
@@ -75,8 +75,8 @@ const SIQ = class extends BaseTypeQ {
 
     }
 
-    toByte() {
-        return super.toByte() | this.ReservedBit | this.Value;
+    toBytes() {
+        return super.toBytes() | this.ReservedBit | this.Value;
     }
 
     toString() {
@@ -112,9 +112,9 @@ const DIQ = class extends BaseTypeQ {
 
     }
 
-    toByte() {
+    toBytes() {
 
-        return super.toByte() | this.ReservedBit | this.Value;
+        return super.toBytes() | this.ReservedBit | this.Value;
     }
 
     toString() {
@@ -174,8 +174,8 @@ const QDP = class extends BaseTypeQ {
         this.ReservedBit = this.RawValue & this.#mask_reserved;
     }
 
-    toByte() {
-        return super.toByte() | this.ReservedBit | this.EffectInvalid;
+    toBytes() {
+        return super.toBytes() | this.ReservedBit | this.EffectInvalid;
     }
 
     toString() {
@@ -201,7 +201,7 @@ const VTI = class {
         }
     }
 
-    toByte() {
+    toBytes() {
         return (this.Transient << 7) | this.Value;
     }
 
@@ -226,7 +226,7 @@ const NVA = class {
             checkConstructArgs(this.Value, NVA.ByteLength);
         }
     }
-    toByte() {
+    toBytes() {
         throw new Error("Not Implement.");
     }
 }
@@ -240,7 +240,7 @@ const SVA = class {
             checkConstructArgs(this.Value, SVA.ByteLength);
         }
     }
-    toByte() {
+    toBytes() {
         throw new Error("Not Implement.");
     }
 }
@@ -262,7 +262,7 @@ const R32 = class {
 
         }
     }
-    toByte(littleEndian = true) {
+    toBytes(littleEndian = true) {
         // 创建一个 4 字节的 ArrayBuffer
         const buffer = new ArrayBuffer(R32.ByteLength);
 
@@ -298,7 +298,7 @@ const BCR = class {
             this.Value = { Count: count, SequenceNumber: sqNum, IsOverflow: isOverflow, IsAdjust: isAdjust, IsInvalid: isInvalid };
         }
     }
-    toByte() {
+    toBytes() {
         throw new Error("Not Implement.");
     }
 }
@@ -323,9 +323,9 @@ const SEP = class extends BaseTypeQ {
 
     }
 
-    toByte() {
+    toBytes() {
 
-        return super.toByte() | this.ReservedBit | this.Value;
+        return super.toBytes() | this.ReservedBit | this.Value;
     }
 
     toString() {
@@ -432,7 +432,7 @@ const FBP = class {
             throw new Error(`非法的测试字${bytes}`);
         }
     }
-    toByte() {
+    toBytes() {
         return [0xAA, 0x55]
     }
 }
@@ -578,27 +578,29 @@ const CP56Time2a = class extends CP24Time2a {
     #mask_res4 = 0x80;
 
     constructor(bytes) {
-        let offset = 3;
-        super(bytes.readBytes(offset, 0));
+        super(bytes);
+        if (bytes != undefined) {
+            let offset = 3;
+            super(bytes.readBytes(offset, 0));
 
-        let tmp = bytes.readBytes(1, offset);
-        offset += 1;
-        this.IsSummerTime = Boolean(tmp[0] & this.#mask_su);
-        this.Reserved2 = tmp[0] & this.#mask_res2;
-        this.Hour = tmp[0] & this.#mask_hour;
-        this.DayOfWeek = (tmp[0] & this.#mask_dow) >> 5;
-        this.DayOfMonth = tmp[0] & this.#mask_dom;
+            let tmp = bytes.readBytes(1, offset);
+            offset += 1;
+            this.IsSummerTime = Boolean(tmp[0] & this.#mask_su);
+            this.Reserved2 = tmp[0] & this.#mask_res2;
+            this.Hour = tmp[0] & this.#mask_hour;
+            this.DayOfWeek = (tmp[0] & this.#mask_dow) >> 5;
+            this.DayOfMonth = tmp[0] & this.#mask_dom;
 
-        tmp = bytes.readBytes(1, offset);
-        offset += 1;
-        this.Reserved3 = tmp[0] & this.#mask_res3;
-        this.Month = tmp[0] & this.#mask_month;
+            tmp = bytes.readBytes(1, offset);
+            offset += 1;
+            this.Reserved3 = tmp[0] & this.#mask_res3;
+            this.Month = tmp[0] & this.#mask_month;
 
-        tmp = bytes.readBytes(1, offset);
-        offset += 1;
-        this.Reserved4 = tmp[0] & this.#mask_res4;
-        this.Year = tmp[0] & this.#mask_year;
-
+            tmp = bytes.readBytes(1, offset);
+            offset += 1;
+            this.Reserved4 = tmp[0] & this.#mask_res4;
+            this.Year = tmp[0] & this.#mask_year;
+        }
     }
     toBytes() {
         throw new Error("Not implement");
@@ -623,20 +625,22 @@ const CP24Time2a = class extends CP16Time2a {
     TimeType = "";
 
     constructor(bytes) {
-        let offset = 2;
-        super(bytes.readBytes(offset, 0));
+        super(bytes);
+        if (bytes != undefined) {
+            let offset = 2;
+            super(bytes.readBytes(offset, 0));
 
-        let tmp = bytes.readBytes(2, offset);
-        offset += 2;
-        this.Millisecond = tmp.toUInt();
+            let tmp = bytes.readBytes(2, offset);
+            offset += 2;
+            this.Millisecond = tmp.toUInt();
 
-        tmp = bytes.readBytes(1, offset);
-        offset += 1;
-        this.IsInvalid = Boolean(tmp[0] & this.#mask_invalid);
-        this.Reserved1 = tmp[0] & this.#mask_res1;
-        this.TimeType = Boolean(this.Reserved1) ? "Substituted Time" : "Real Time";
-        this.Minute = tmp[0] & this.#mask_minute;
-
+            tmp = bytes.readBytes(1, offset);
+            offset += 1;
+            this.IsInvalid = Boolean(tmp[0] & this.#mask_invalid);
+            this.Reserved1 = tmp[0] & this.#mask_res1;
+            this.TimeType = Boolean(this.Reserved1) ? "Substituted Time" : "Real Time";
+            this.Minute = tmp[0] & this.#mask_minute;
+        }
     }
     toBytes() {
         throw new Error("Not implement");
@@ -651,15 +655,14 @@ const CP24Time2a = class extends CP16Time2a {
 // No.20
 const CP16Time2a = class {
     static ByteLength = 2;
-
     Millisecond = 0;
-
-
     constructor(bytes) {
-        let offset = 0;
-        let tmp = bytes.readBytes(2, offset);
-        offset += 2;
-        this.Millisecond = tmp.toUInt();
+        if (bytes != undefined) {
+            let offset = 0;
+            let tmp = bytes.readBytes(2, offset);
+            offset += 2;
+            this.Millisecond = tmp.toUInt();
+        }
 
     }
     toBytes() {
@@ -671,75 +674,175 @@ const CP16Time2a = class {
 
 
 }
+
 const COI = class {
     static ByteLength = 1;
-    RawValue = 0;
-    ReasonOfInit = 'Local Close';
-    #mask_roi = 0x7F;
-    IsLocalParamChanged = false;
-    #mask_paramChanged = 0x80;
+    #mask_val = 0xFE;
+    #mask_init = 0x01;
+    InitReason = "";
+    IsInitParamChanged = "";
+    constructor(bytes) {
+        if (bytes != undefined) {
+            if (Array.isArray(bytes)) {
+                bytes = bytes[0];
+            }
+            let reason = (bytes & this.#mask_val) >> 1;
+            switch (reason) {
+                case 0: this.InitReason = "Local Power On"; break;
+                case 1: this.InitReason = "Local Manual Reset"; break;
+                case 2: this.InitReason = "Remote Reset"; break;
+                case (reason >= 3 && reason <= 31): this.InitReason = "Reserved for this standard"; break;
+                case (reason >= 32 && reason <= 127): this.InitReason = "Reserved for special"; break;
+            }
+            this.IsInitParamChanged = Boolean(bytes & this.#mask_init);
 
-    constructor(bytes) {
-        this.RawValue = extractRawValue(bytes);
-        checkConstructArgs(this.RawValue, COI.ByteLength);
-        this.IsLocalParamChanged = Boolean(this.RawValue & this.#mask_paramChanged);
-        const reason = this.RawValue & this.#mask_roi;
-        switch (reason) {
-            case 0:
-                this.ReasonOfInit = 'Local Power Close';
-                break;
-            case 1:
-                this.ReasonOfInit = 'Local Reset Manually';
-                break;
-            case reason >= 31 || reason <= 127:
-                this.ReasonOfInit = 'Reserved';
-                break;
-            default:
-                throw new Error('Invalid value of COI at constructor');
         }
     }
     toBytes() {
-        throw new Error("Not implement.");
-    }
-    toString() {
-        return `{Reason of Init: ${this.ReasonOfInit}, Is Local Parameter Changed:${this.IsLocalParamChanged}}`;
+        throw new Error("Not implement");
     }
 }
-const QUI = class {
+
+const QOI = class {
     static ByteLength = 1;
-    RawValue = 0;
-    Call = 'Unused';
-    #group_num = -1;
+    Interrogation = "";
+    #group_offset = -20;
     constructor(bytes) {
-        this.RawValue = extractRawValue(bytes);
-        checkConstructArgs(this.RawValue, QUI.ByteLength);
-        switch (this.RawValue) {
-            case 0:
-                this.Call = 'Unused';
-                break;
-            case this.RawValue >= 1 && this.RawValue <= 19:
-            case this.RawValue >= 37 && this.RawValue <= 63:
-            case this.RawValue >= 64 && this.RawValue <= 255:
-                this.Call = 'Reserved';
-            case 20:
-                this.Call = 'General';
-                break;
-            case this.RawValue >= 21 && this.RawValue <= 36:
-                this.Call = `Group ${this.RawValue - 10}`
+        if (bytes != undefined) {
+            if (Array.isArray(bytes)) {
+                bytes = bytes[0];
+            }
+            checkConstructArgs(bytes);
+            this.Interrogation = bytes + this.#group_offset;
+        }
+    }
+    toString() {
+        return `Interrogate Group ${this.Interrogation}`;
+    }
+    toBytes() {
+        throw new Error("Not implement");
+    }
+
+}
+
+const QCC = class {
+    static ByteLength = 1;
+    #mask_req = 0xFC;
+    #mask_freeze = 0x03;
+    Request = 0;
+    Freeze = 0;
+    constructor(bytes) {
+        if (bytes != undefined) {
+            if (Array.isArray(bytes)) {
+                bytes = bytes[0];
+            }
+            checkConstructArgs(bytes);
+            this.Freeze = bytes & this.#mask_freeze;
+            this.Request = (bytes & this.#mask_req) >> 2;
         }
     }
     toBytes() {
-        throw new Error("Not implement.");
+        throw new Error("Not implement");
     }
     toString() {
-        return `{Category of Call: ${this.Call}}`;
+        let result = "", req = "", freeze = "";
+        switch (this.Request) {
+            case 0: req = "No Request"; break;
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+                req = `Request Counter Group: ${this.Request}`; break;
+            case 5:
+                req = "General Request Counter"; break;
+            case (this.Request >= 0 || this.Request <= 31):
+                req = "Reserved for compatibility"; break;
+            case (this.Request >= 32 || this.Request <= 63):
+                req = "Reserved for special"; break;
+        }
+        switch (this.Freeze) {
+            case 0: freeze = "Read(no freeze or reset)"; break;
+            case 1: freeze = "Freeze Without Reset"; break;
+            case 2: freeze = "Freeze With Reset"; break;
+            case 3: freeze = "Reset"; break;
+        }
+        result = `{Request: "${req}", Freeze:"${freeze}"}`
+        return result;
     }
 }
-const QCC = class { }
-const QPM = class { }
+
+const QPM = class {
+    static ByteLength = 1;
+    #mask_kpa = 0x3F;
+    #mask_lpc = 0x40;
+    #mask_pop = 0x80;
+    KindOfParam = "";
+    LocalParamChanged = false;
+    ParamOperate = false;
+    constructor(bytes) {
+        if (bytes != undefined) {
+            if (Array.isArray(bytes)) {
+                bytes = bytes[0];
+            }
+            checkConstructArgs(bytes);
+            this.KindOfParam = bytes & this.#mask_kpa;
+            this.LocalParamChanged = Boolean(bytes & this.#mask_lpc);
+            this.ParamOperate = Boolean(bytes & this.#mask_pop);
+        }
+    }
+    toBytes() {
+        throw new Error("Not implement");
+    }
+    toString() {
+        let result = "", kpa = "";
+        switch (this.KindOfParam) {
+            case 0: kpa = "Not used"; break;
+            case 1: kpa = "Threshold value"; break;
+            case 2: kpa = "Smoothing factor"; break;
+            case 3: kpa = "Min measured value"; break;
+            case 4: kpa = "Max measured value"; break;
+            case (this.KindOfParam >= 5 && this.KindOfParam <= 31):
+                kpa = "Reserved for compatibility"; break;
+            case (this.Request >= 32 || this.Request <= 63):
+                kpa = "Reserved for special"; break;
+        }
+        result = `{KindOfParam: "${kpa}", LocalParamChanged: "${this.LocalParamChanged}, ParamOperate: ${this.ParamOperate}"}`
+        return result;
+    }
+}
 
 // No.25
-const QPA = class { }
+const QPA = class {
+    static ByteLength = 1;
+    Value = 0;
+    constructor(bytes) {
+        if (bytes != undefined) {
+            if (Array.isArray(bytes)) {
+                bytes = bytes[0];
+            }
+            checkConstructArgs(bytes);
+            this.Value = bytes;
+        }
+    }
+    toBytes() {
+        throw new Error("Not implement");
+    }
+    toString() {
+        let act = "";
+        switch (this.Value) {
+            case 0: act = "Not used"; break;
+            case 1: act = "Active/Inactive param loaded before"; break;
+            case 2: act = "Active/Inactive param of addressing information object"; break;
+            case 3: act = "Active/Inactive param of cycling information object"; break;
+            case (this.KindOfParam >= 4 && this.KindOfParam <= 127):
+                kpa = "Reserved for compatibility"; break;
+            case (this.Request >= 128 || this.Request <= 255):
+                kpa = "Reserved for special"; break;
+        }
+        result = `{Active: "${act}"}`
+        return result;
+    }
+}
 const QOC = class {
     #mask_s_or_e = 0x80;
     #mask_qu = 0x7C;
@@ -782,8 +885,39 @@ const QOC = class {
 
 
 }
-const QRP = class { }
-const FRQ = class { }
+const QRP = class {
+    static ByteLength = 1;
+    Value = 0;
+    constructor(bytes) {
+        if (bytes != undefined) {
+            if (Array.isArray(bytes)) {
+                bytes = bytes[0];
+            }
+            checkConstructArgs(bytes);
+            this.Value = bytes;
+        }
+    }
+    toBytes() {
+        throw new Error("Not implement");
+    }
+    toString() {
+        let reset = "";
+        switch (this.Value) {
+            case 0: reset = "Not used"; break;
+            case 1: reset = "General reset"; break;
+            case 2: reset = "Information with timestamp to be handled in reset buffer"; break;
+            case (this.Value >= 3 && this.Value <= 127):
+                reset = "Reserved for compatibility"; break;
+            case (this.Request >= 128 || this.Request <= 255):
+                reset = "Reserved for special"; break;
+        }
+        result = `{Reset process: "${reset}"}`
+        return result;
+    }
+}
+const FRQ = class {
+    
+ }
 const SRQ = class { }
 
 // No.30
@@ -804,6 +938,6 @@ const SCD = class { }
 module.exports = {
     SIQ, DIQ, QDS, QDP, VTI, NVA, SVA, R32, BCR, SEP,
     SPE, OCI, BSI, FBP, SCO, DCO, RCO, CP56Time2a, CP24Time2a, CP16Time2a,
-    COI, QUI, QCC, QPM, QPA, QOC, QRP, FRQ, SRQ, SCQ,
+    COI, QUI: QOI, QCC, QPM, QPA, QOC, QRP, FRQ, SRQ, SCQ,
     LSQ, AFQ, NOF, NOS, LOF, LOS, CHS, SOF, QOS, SCD
 }
