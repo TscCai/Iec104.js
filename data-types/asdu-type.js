@@ -5,8 +5,23 @@ const BaseInformationObject = class {
     static Description = 'Abstract information object';
     static ByteLength = 0;
     Value = {};
+    #stream = { ptr: 0, bytes: [] };
     constructor(bytes) {
-
+        this.#stream.bytes = bytes;
+    }
+    readStream(length) {
+        if (this.#stream.ptr + length > this.#stream.bytes.length) {
+            throw new Error('Out of stream');
+        }
+        const result = this.#stream.bytes.readBytes(length, this.#stream.ptr);
+        this.#stream.ptr += length;
+        return result;
+    }
+    isEndOfStream() {
+        return this.#stream.ptr >= this.#stream.bytes.length;
+    }
+    resetStream() {
+        this.#stream.ptr = 0;
     }
 }
 
@@ -16,16 +31,20 @@ const M_SP_NA_1 = class extends BaseInformationObject {
     static Description = 'Single-point information';
     static ByteLength = BaseType.SIQ.ByteLength;
     constructor(bytes) {
-        this.Value = new BaseType.SIQ(bytes);
+        super(bytes);
+        this.Value = { SIQ: new BaseType.SIQ(bytes) };
     }
 }
 
 const M_SP_TA_1 = class extends BaseInformationObject {
     static TID = 0x02;
     static Description = 'Single-point information with time tag'
-    static ByteLength = BaseType.SIQ.ByteLength + 3;
+    static ByteLength = BaseType.SIQ.ByteLength + BaseType.CP24Time2a.ByteLength;
     constructor(bytes) {
-        super(bytes)
+        super(bytes);
+        const value = new BaseType.SIQ(this.readStream(BaseType.SIQ.ByteLength));
+        const timestamp = new BaseType.CP24Time2a(this.readStream(BaseType.CP24Time2a.ByteLength));
+        this.Value = { SIQ: value, Timestamp: timestamp }
     }
 }
 
@@ -34,16 +53,23 @@ const M_DP_NA_1 = class extends BaseInformationObject {
     static Description = 'Double-point information'
     static ByteLength = BaseType.DIQ.ByteLength;
     constructor(bytes) {
-        this.Value = new BaseType.DIQ(bytes);
+        super(bytes);
+        this.Value = { DIQ: new BaseType.DIQ(bytes) };
     }
 }
 
 const M_DP_TA_1 = class extends BaseInformationObject {
     static TID = 0x04;
     static Description = "Double-point information with time tag";
-    static ByteLength = BaseType.DIQ.ByteLength + 3;
+    static ByteLength = BaseType.DIQ.ByteLength + BaseType.CP24Time2a.ByteLength;
     constructor(bytes) {
-        console.log("not implement");
+        if (bytes.length != M_DP_TA_1.ByteLength) {
+            throw new Error('Invalid length of input bytes');
+        }
+        super(bytes);
+        const value = new BaseType.DIQ(this.readStream(BaseType.DIQ.ByteLength));
+        const timestamp = new BaseType.DIQ(this.readStream(BaseType.CP24Time2a.ByteLength));
+        this.Value = { DIQ: value, Timestamp: timestamp };
     }
 }
 const M_ST_NA_1 = class extends BaseInformationObject {
@@ -51,15 +77,20 @@ const M_ST_NA_1 = class extends BaseInformationObject {
     static Description = "Step position information";
     static ByteLength = BaseType.VTI.ByteLength + BaseType.QDS.ByteLength;
     constructor(bytes) {
-        console.log("not implement");
+        super(bytes);
+        const value = new BaseType.VTI(this.readStream(BaseType.VTI.ByteLength));
+        const quality = new BaseType.QDS(this.readStream(BaseType.QDS.ByteLength));
+        this.Value = { VTI: value, Quality: quality };
     }
 }
 const M_ST_TA_1 = class extends BaseInformationObject {
     static TID = 0x06;
     static Description = "Step position information with time tag";
-    static ByteLength = BaseType.VTI.ByteLength + BaseType.QDS.ByteLength + 3 * 8;
+    static ByteLength = BaseType.VTI.ByteLength + BaseType.QDS.ByteLength + BaseType.CP24Time2a.ByteLength;
     constructor(bytes) {
-        console.log("not implement");
+        const value = new BaseType.VTI(bytes.readStream(BaseType.VTI.ByteLength));
+        const quality = new BaseType.QDS(bytes.readStream(BaseType.QDS.ByteLength));
+
     }
 }
 const M_BO_NA_1 = class extends BaseInformationObject {

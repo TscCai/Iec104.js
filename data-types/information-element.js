@@ -32,7 +32,7 @@ const BaseTypeQ = class {
 
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = this.extractRawValue(bytes);
+            this.RawValue = extractRawValue(bytes);
 
             //checkConstructArgs(bytes);
 
@@ -142,7 +142,7 @@ const QDS = class {
 
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = this.extractRawValue(bytes);
+            this.RawValue = extractRawValue(bytes);
             checkConstructArgs(this.RawValue, QDS.ByteLength);
 
             this.Invalid = Boolean(this.RawValue & this.#mask_invalid);
@@ -194,7 +194,7 @@ const VTI = class {
 
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = this.extractRawValue(bytes);
+            this.RawValue = extractRawValue(bytes);
             checkConstructArgs(this.RawValue, VTI.ByteLength);
             this.Value = this.RawValue & this.#mask_value;
             this.Transient = this.RawValue & this.#mask_transient;
@@ -355,7 +355,7 @@ const SPE = class {
 
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = this.extractRawValue(bytes);
+            this.RawValue = extractRawValue(bytes);
             checkConstructArgs(this.RawValue, SPE.ByteLength);
             this.GeneralStart = Boolean(this.RawValue & this.#mask_GS);
             this.PhaseAStart = Boolean(this.RawValue & this.#mask_SL1);
@@ -386,7 +386,7 @@ const OCI = class {
 
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = this.extractRawValue(bytes);
+            this.RawValue = extractRawValue(bytes);
             checkConstructArgs(this.RawValue, SPE.ByteLength);
             this.GeneralOut = Boolean(this.RawValue & this.#mask_GC);
             this.PhaseAOut = Boolean(this.RawValue & this.#mask_CL1);
@@ -407,7 +407,7 @@ const BSI = class {
     Value = "";
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = this.extractRawValue(bytes);
+            this.RawValue = extractRawValue(bytes);
             checkConstructArgs(this.RawValue, BSI.ByteLength);
             this.Value = this.RawValue.toString(2);
         }
@@ -453,7 +453,7 @@ const SCO = class {
 
     QOC = {}
     constructor(bytes) {
-        this.RawValue = this.extractRawValue(bytes);
+        this.RawValue = extractRawValue(bytes);
         checkConstructArgs(this.RawValue, SCO.ByteLength);
         this.ToClose = Boolean(this.RawValue & this.#mask_cmd);
         this.ToOpen = !this.ToClose;
@@ -481,7 +481,7 @@ const DCO = class {
     #cmd = "";
     QOC = {}
     constructor(bytes) {
-        this.RawValue = this.extractRawValue(bytes);
+        this.RawValue = extractRawValue(bytes);
         checkConstructArgs(this.RawValue, DCO.ByteLength);
         let tmp = this.RawValue & this.#mask_cmd;
         switch (tmp) {
@@ -520,7 +520,7 @@ const RCO = class {
     #cmd = "";
     QOC = {}
     constructor(bytes) {
-        this.RawValue = this.extractRawValue(bytes);
+        this.RawValue = extractRawValue(bytes);
         checkConstructArgs(this.RawValue, RCO.ByteLength);
         let tmp = this.RawValue & this.#mask_cmd;
         switch (tmp) {
@@ -547,6 +547,70 @@ const RCO = class {
         return `{Command: ${this.#cmd},${this.QOC.toString()}`;
     }
 }
+const CP16Time2a = class {
+    static ByteLength = 2;
+    Millisecond = 0;
+    constructor(bytes) {
+        if (bytes != undefined) {
+            let offset = 0;
+            let tmp = bytes.readBytes(2, offset);
+            offset += 2;
+            this.Millisecond = tmp.toUInt();
+        }
+
+    }
+    toBytes() {
+        throw new Error("Not implement");
+    }
+    toString() {
+
+    }
+
+
+}
+
+
+const CP24Time2a = class extends CP16Time2a {
+    static ByteLength = 3;
+    Minute = 0;
+    #mask_minute = 0x3F;
+
+    IsInvalid = false;
+    #mask_invalid = 0x80;
+
+    Reserved1 = 0;
+    #mask_res1 = 0x40;
+
+    TimeType = "";
+
+    constructor(bytes) {
+        super(bytes);
+        if (bytes != undefined) {
+            let offset = 2;
+            super(bytes.readBytes(offset, 0));
+
+            let tmp = bytes.readBytes(2, offset);
+            offset += 2;
+            this.Millisecond = tmp.toUInt();
+
+            tmp = bytes.readBytes(1, offset);
+            offset += 1;
+            this.IsInvalid = Boolean(tmp[0] & this.#mask_invalid);
+            this.Reserved1 = tmp[0] & this.#mask_res1;
+            this.TimeType = Boolean(this.Reserved1) ? "Substituted Time" : "Real Time";
+            this.Minute = tmp[0] & this.#mask_minute;
+        }
+    }
+    toBytes() {
+        throw new Error("Not implement");
+    }
+    toString() {
+
+    }
+
+
+}
+
 const CP56Time2a = class extends CP24Time2a {
     static ByteLength = 7;
 
@@ -611,69 +675,8 @@ const CP56Time2a = class extends CP24Time2a {
 
 
 }
-const CP24Time2a = class extends CP16Time2a {
-    static ByteLength = 3;
-    Minute = 0;
-    #mask_minute = 0x3F;
-
-    IsInvalid = false;
-    #mask_invalid = 0x80;
-
-    Reserved1 = 0;
-    #mask_res1 = 0x40;
-
-    TimeType = "";
-
-    constructor(bytes) {
-        super(bytes);
-        if (bytes != undefined) {
-            let offset = 2;
-            super(bytes.readBytes(offset, 0));
-
-            let tmp = bytes.readBytes(2, offset);
-            offset += 2;
-            this.Millisecond = tmp.toUInt();
-
-            tmp = bytes.readBytes(1, offset);
-            offset += 1;
-            this.IsInvalid = Boolean(tmp[0] & this.#mask_invalid);
-            this.Reserved1 = tmp[0] & this.#mask_res1;
-            this.TimeType = Boolean(this.Reserved1) ? "Substituted Time" : "Real Time";
-            this.Minute = tmp[0] & this.#mask_minute;
-        }
-    }
-    toBytes() {
-        throw new Error("Not implement");
-    }
-    toString() {
-
-    }
-
-
-}
-
 // No.20
-const CP16Time2a = class {
-    static ByteLength = 2;
-    Millisecond = 0;
-    constructor(bytes) {
-        if (bytes != undefined) {
-            let offset = 0;
-            let tmp = bytes.readBytes(2, offset);
-            offset += 2;
-            this.Millisecond = tmp.toUInt();
-        }
 
-    }
-    toBytes() {
-        throw new Error("Not implement");
-    }
-    toString() {
-
-    }
-
-
-}
 
 const COI = class {
     static ByteLength = 1;
@@ -1123,7 +1126,7 @@ const NOF = class {
     Value = '';
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = this.extractRawValue(bytes);
+            this.RawValue = extractRawValue(bytes);
         }
         if (this.RawValue > 0) {
             this.Value = this.RawValue;
@@ -1140,7 +1143,7 @@ const NOS = class {
     Value = '';
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = this.extractRawValue(bytes);
+            this.RawValue = extractRawValue(bytes);
         }
         if (this.RawValue > 0) {
             this.Value = this.RawValue;
@@ -1158,7 +1161,7 @@ const LOF = class {
     Value = '';
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = this.extractRawValue(bytes);
+            this.RawValue = extractRawValue(bytes);
         }
         if (this.RawValue > 0) {
             this.Value = this.RawValue;
@@ -1175,7 +1178,7 @@ const LOS = class {
     Value = '';
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = this.extractRawValue(bytes);
+            this.RawValue = extractRawValue(bytes);
         }
         if (this.RawValue > 0) {
             this.Value = this.RawValue;
@@ -1192,7 +1195,7 @@ const CHS = class {
     Value = '';
     constructor(bytes) {
         if (bytes != undefined) {
-            this.RawValue = this.extractRawValue(bytes);
+            this.RawValue = extractRawValue(bytes);
         }
         if (this.RawValue > 0) {
             this.Value = this.RawValue;
