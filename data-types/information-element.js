@@ -869,6 +869,7 @@ const QPA = class {
     }
 }
 const QOC = class {
+    static ByteLength = 1;
     static Name = 'QOC';
     #mask_s_or_e = 0x80;
     #mask_qu = 0x7C;
@@ -1151,7 +1152,7 @@ const AFQ = class {
 }
 const NOF = class {
     static Name = 'NOF';
-    ByteLength = 2;
+    static ByteLength = 2;
     RawValue = 0;
     Value = '';
     constructor(bytes) {
@@ -1222,7 +1223,8 @@ const LOS = class {
         return `{Length of section:${this.Value}}`;
     }
 }
-const COS = class {
+/*
+const _COS = class {
     static Name = 'COS';
     ByteLength = -1;
     RawValue = [];
@@ -1240,7 +1242,7 @@ const COS = class {
 
 
     }
-}
+}*/
 const CHS = class {
     static Name = 'CHS';
     static ByteLength = 1;
@@ -1262,22 +1264,90 @@ const CHS = class {
 const SOF = class {
     static Name = 'SOF';
     static ByteLength = 1;
+    RawValue = 0;
+    #mask_status = 0x1F;
+    #mask_for = 0x40;
+    #mask_fa = 0x80;
+    #mask_lfd = 20;
+    STATUS = 0;
+
+    //IsLastFileDirectory
+    LFD = false;
+
+    // Define sub directory name
+    FOR = false;
+
+    // File transmission active
+    FA = false;
+
     constructor(bytes) {
-        throw new Error('not implement');
+        if (bytes != undefined) {
+            this.RawValue = extractRawValue(bytes);
+            this.STATUS = this.RawValue & this.#mask_status;
+            this.LFD = this.RawValue & this.#mask_lfd;
+            this.FOR = Boolean(this.RawValue & this.#mask_for);
+            this.FA = Boolean(this.RawValue & this.#mask_fa);
+        }
+    }
+
+    toString() {
+        return `{Status:${this.STATUS}, IsLastFileDirectory:${this.LFD}, DefineSubDirName:${this.FOR}, IsFileActive:${this.FA}}`;
+    }
+    toBytes() {
+        throw new Error('Not implement');
     }
 }
 const QOS = class {
     static Name = 'QOS';
     static ByteLength = 1;
+    QL = 0;
+    SE = false;
+
+    #mask_se = 0x80;
+    #mask_ql = 0x7F;
     constructor(bytes) {
-        throw new Error('not implement');
+        if (bytes != undefined) {
+            this.RawValue = extractRawValue(bytes);
+            this.QL = this.RawValue & this.#mask_ql;
+            this.SE = Boolean(this.RawValue & this.#mask_se);
+        }
+    }
+    toString() {
+        return `{QL:${this.QL}, SelectOrExecute:${this.SE}}`
     }
 }
 const SCD = class {
     static Name = 'SCD';
-    static ByteLength = 1;
+    static ByteLength = 4;
+    ST = 0;
+    CD = 0;
+
     constructor(bytes) {
-        throw new Error('not implement');
+        if (bytes != undefined && Array.isArray(bytes)) {
+            if (bytes.length != 4) {
+                throw new Error("Invalid input bytes");
+            }
+            this.ST = bytes.readBytes(2).toUInt();
+            this.CD = bytes.readBytes(2, 2).toUInt();
+        }
+    }
+    toString() {
+        return `{ST:${this.ST.toString(2)}, CD:${this.CD.toString(2)}}`
+    }
+}
+
+const TSC = class {
+    static Name = 'TSC';
+    static ByteLength = 2;
+    Counter = 0;
+    constructor(bytes) {
+        if (bytes != undefined) {
+            this.RawValue = extractRawValue(bytes);
+            this.Counter = this.RawValue;
+        }
+    }
+    toString() {
+        return `{Counter: ${this.Counter}}`;
     }
 }
 
@@ -1285,5 +1355,6 @@ module.exports = {
     SIQ, DIQ, QDS, QDP, VTI, NVA, SVA, R32, BCR, SEP,
     SPE, OCI, BSI, FBP, SCO, DCO, RCO, CP56Time2a, CP24Time2a, CP16Time2a,
     COI, QOI, QCC, QPM, QPA, QOC, GRP, FRQ, SRQ, SCQ,
-    LSQ, AFQ, NOF, NOS, LOF, LOS, CHS, SOF, QOS, SCD
+    LSQ, AFQ, NOF, NOS, LOF, LOS, CHS, SOF, QOS, SCD,
+    TSC
 }

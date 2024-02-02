@@ -1,9 +1,9 @@
 const AsduDict = require('./data-types/asdu-type');
-const InformationObjectFactory = class {
-    static createInstance(tid, bytes) {
-        return Reflect.construct(AsduDict[tid], [bytes]);
+class InformationObjectFactory {
+    static CreateInstance(tid, stream) {
+        return Reflect.construct(AsduDict[tid], [stream]);
     }
-    static getDescription(tid) {
+    static GetDescription(tid) {
         if (tid != undefined) {
             if (Array.isArray(tid)) {
                 tid = tid[0];

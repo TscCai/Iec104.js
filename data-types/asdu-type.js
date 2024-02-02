@@ -13,46 +13,30 @@ const BaseInformationObject = class {
     }
 
     Value = {};
-    #stream = { ptr: 0, bytes: [] };
-    constructor(bytes, structure) {
-        this.#stream.bytes = bytes;
-        if (structure != undefined) {
-            this.initObject(structure);
+
+    #stream = null;
+    constructor(stream, structure) {
+        if (stream != undefined) {
+            this.#stream = stream;
+            if (structure != undefined) {
+                this.initObject(structure);
+            }
+            else if (this.constructor.InformationObjectStructure != undefined) {
+                this.initObject(this.constructor.InformationObjectStructure);
+            }
         }
-        else if (this.constructor.InformationObjectStructure != undefined) {
-            this.initObject(this.constructor.InformationObjectStructure);
-        }
+
     }
-    static getByteLength(structure) {
-        let result = 0;
-        for (const i of structure) {
-            result += i.ByteLength;
-        }
-        return result;
-    }
-    readStream(length) {
-        if (this.#stream.ptr + length > this.#stream.bytes.length) {
-            throw new Error('Out of stream');
-        }
-        const result = this.#stream.bytes.readBytes(length, this.#stream.ptr);
-        this.#stream.ptr += length;
-        return result;
-    }
-    get isEndOfStream() {
-        return this.#stream.ptr >= this.#stream.bytes.length;
-    }
-    resetStream() {
-        this.#stream.ptr = 0;
-    }
+
     initObject(structure) {
         for (const i of structure) {
-            const args = [this.readStream(i.ByteLength)];
+            const args = [this.#stream.Read(i.ByteLength)];
             this.Value[i.Name] = Reflect.construct(i, args);
         }
     }
 }
 
-// According to IEC-60870-5-101 Chapter 7.3.1
+// According to IEC-60870-5-101 Chapter 7.3.1 and IEC-60870-5-104 2009
 const M_SP_NA_1 = class extends BaseInformationObject {
     static TID = 0x01;
     static Description = 'Single-point information';
@@ -259,68 +243,47 @@ const C_BO_NA_1 = class extends BaseInformationObject {
     static Description = "Bitstring 32 bit command";
     static InformationObjectStructure = [InfoEle.BSI];
 }
-// TODO: Not Finish
+
 const C_SC_TA_1 = class extends BaseInformationObject {
     static TID = 0x3A;
     static Description = "Single command with time tag CP56Time2a";
-    static ByteLength = 0;
-    constructor(bytes) {
-        throw new Error("not implement");
-    }
+    static InformationObjectStructure = [InfoEle.SCO, InfoEle.CP56Time2a];
 }
-//TODO: Not finish
+
 const C_DC_TA_1 = class extends BaseInformationObject {
     static TID = 0x3B;
     static Description = "Double command with time tag CP56Time2a";
-    static ByteLength = 0;
-    constructor(bytes) {
-        throw new Error("not implement");
-    }
+    static InformationObjectStructure = [InfoEle.DCO, InfoEle.CP56Time2a];
 }
-//TODO: Not finish
+
 const C_RC_TA_1 = class extends BaseInformationObject {
     static TID = 0x3C;
     static Description = "Regulating step command with time tag CP56Time2a";
-    static ByteLength = 0;
-    constructor(bytes) {
-        throw new Error("not implement");
-    }
+    static InformationObjectStructure = [InfoEle.RCO, InfoEle.CP56Time2a];
 }
-//TODO: Not finish
+
 const C_SE_TA_1 = class extends BaseInformationObject {
     static TID = 0x3D;
     static Description = "Measured value, normalised value command with time tag CP56Time2a";
-    static ByteLength = 0;
-    constructor(bytes) {
-        throw new Error("not implement");
-    }
+    static InformationObjectStructure = [InfoEle.NVA, InfoEle.QOS, InfoEle.CP56Time2a];
 }
-//TODO: Not finish
+
 const C_SE_TB_1 = class extends BaseInformationObject {
     static TID = 0x3E;
     static Description = "Measured value, scaled value command with time tag CP56Time2a";
-    static ByteLength = 0;
-    constructor(bytes) {
-        throw new Error("not implement");
-    }
+    static InformationObjectStructure = [InfoEle.SVA, InfoEle.QOS, InfoEle.CP56Time2a];
 }
-//TODO: Not finish
+
 const C_SE_TC_1 = class extends BaseInformationObject {
     static TID = 0x3F;
     static Description = "Measured value, short floating point number command with time tag CP56Time2a";
-    static ByteLength = 0;
-    constructor(bytes) {
-        throw new Error("not implement");
-    }
+    static InformationObjectStructure = [InfoEle.R32, InfoEle.QOS, InfoEle.CP56Time2a];
 }
-//TODO: Not finish
+
 const C_BO_TA_1 = class extends BaseInformationObject {
     static TID = 0x40;
     static Description = "Bitstring of 32 bit command with time tag CP56Time2a";
-    static ByteLength = 0;
-    constructor(bytes) {
-        throw new Error("not implement");
-    }
+    static InformationObjectStructure = [InfoEle.BSI, InfoEle.CP56Time2a];
 }
 const M_EI_NA_1 = class extends BaseInformationObject {
     static TID = 0x46;
@@ -352,12 +315,6 @@ const C_TS_NA_1 = class extends BaseInformationObject {
     static TID = 0x68;
     static Description = "Test command";
     static InformationObjectStructure = [InfoEle.FBP];
-    constructor(bytes) {
-        if (!(bytes[0] == 0xAA && bytes[1] == 0x55)) {
-            throw new Error("非法的参数，测试字固定为AA55");
-        }
-        super(bytes);
-    }
 }
 const C_RP_NA_1 = class extends BaseInformationObject {
     static TID = 0x69;
@@ -369,14 +326,11 @@ const C_CD_NA_1 = class extends BaseInformationObject {
     static Description = "C_CD_NA_1 Delay acquisition command";
     static InformationObjectStructure = [InfoEle.CP16Time2a];
 }
-//TODO: Not finish
+
 const C_TS_TA_1 = class extends BaseInformationObject {
     static TID = 0x6B;
     static Description = "Test command with time tag CP56Time2a";
-    static ByteLength = 0;
-    constructor(bytes) {
-        throw new Error("not implement");
-    }
+    static InformationObjectStructure = [InfoEle.TSC, InfoEle.CP56Time2a];
 }
 const P_ME_NA_1 = class extends BaseInformationObject {
     static TID = 0x6E;
@@ -427,14 +381,30 @@ const F_SG_NA_1 = class extends BaseInformationObject {
     static TID = 0x7D;
     static Description = "Segment";
     static InformationObjectStructure = [InfoEle.NOF, InfoEle.NOS, InfoEle.LOS];
-    constructor(bytes) {
-        throw new Error('Can not read segment');
+   
+    constructor(stream) {
+        let tmp = {};
+        for (const i of F_SG_NA_1.InformationObjectStructure) {
+            const args = [stream.Read(i.ByteLength)];
+            tmp[i.Name] = Reflect.construct(i, args);
+        }
+        const len_seg = tmp['LOS'].Value;
+        tmp['Segment'] = stream.Read(len_seg);
+        super();
+        this.Value = tmp;
+
     }
 }
 const F_DR_TA_1 = class extends BaseInformationObject {
     static TID = 0x7E;
     static Description = "Directory";
     static InformationObjectStructure = [InfoEle.NOF, InfoEle.LOF, InfoEle.SOF, InfoEle.CP56Time2a];
+}
+
+const F_SC_NB_1 = class extends BaseInformationObject {
+    static TID = 0x7F;
+    static Description = 'Query Log';
+    static InformationObjectStructure = [InfoEle.NOF, InfoEle.CP56Time2a, InfoEle.CP56Time2a];
 }
 
 
@@ -455,6 +425,6 @@ module.exports = {
     0x69: C_RP_NA_1, 0x6A: C_CD_NA_1, 0x6B: C_TS_TA_1, 0x6E: P_ME_NA_1,
     0x6F: P_ME_NB_1, 0x70: P_ME_NC_1, 0x71: P_AC_NA_1, 0x78: F_FR_NA_1,
     0x79: F_SR_NA_1, 0x7A: F_SC_NA_1, 0x7B: F_LS_NA_1, 0x7C: F_AF_NA_1,
-    0x7D: F_SG_NA_1, 0x7E: F_DR_TA_1,
+    0x7D: F_SG_NA_1, 0x7E: F_DR_TA_1, 0x7F: F_SC_NB_1
 
 }

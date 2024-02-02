@@ -1,12 +1,11 @@
 require('./bytes-ext');
+const ByteStream = require('./byte-stream');
 const Enums = require('./enum');
 const Const = require('./constant');
 const InformationObject = require('./data-types/asdu-type');
 const InformationObjectFactory = require('./InformationObjectFactory');
 
 const Iec104Packet = class {
-    // Internal pointer to mark where the bytes are now.
-    #streamPointer = 0;
 
     /**
      * @description Raw bytes store here, readonly
@@ -16,6 +15,8 @@ const Iec104Packet = class {
      */
     get RawBytes() { return this.#rawBytes; }
     #rawBytes = [];
+
+    #stream = null;
 
     /**
      * @description APDU length, readonly
@@ -78,6 +79,7 @@ const Iec104Packet = class {
             }
         }
         this.#rawBytes = bytes;
+        this.#stream = new ByteStream(bytes);
         if (settings != undefined) {
             this.#LEN_COT = settings.cotLength || this.#LEN_COT;
             this.#LEN_ASDU_ADDR = settings.asduAddrLength || this.#LEN_ASDU_ADDR;
@@ -86,52 +88,40 @@ const Iec104Packet = class {
         this.#parsePacket();
     }
 
-    toString(){
-        let str  = 
-        `APDU Length: ${this.ApduLength}, Frame Format: ${this.FrameFormat}\n`+
-        `CF: {${this.ControlField}}\n`+
-        `ASDU:{ \n`+
-        `    COT: ${this.Asdu.CauseOfTransfer.Description} \n`+
-        `}`
+    toString() {
+        let str =
+            `APDU Length: ${this.ApduLength}, Frame Format: ${this.FrameFormat}\n` +
+            `CF: {${this.ControlField}}\n` +
+            `ASDU:{ \n` +
+            `    COT: ${this.Asdu.CauseOfTransfer.Description} \n` +
+            `}`
         return str;
     }
 
-    /**
-     * @description Read #rawBytes as stream form
-     * @author Tsccai
-     * @date 2023-12-06
-     * @param {Number} length The length will read, Integer
-     * @returns {Array}
-     */
-    #readByteStream(length) {
-        let bytes = this.#rawBytes.readBytes(length, this.#streamPointer);
-        this.#streamPointer += length;
-        return bytes;
-    }
 
     /**
      * @description Parse the whole packet, invoke automatically in constructor()
      * @author Tsccai
      * @date 2023-12-06
-     */    
+     */
     #parsePacket() {
         let bytes = [];
 
         // Check the start byte
-        bytes = this.#readByteStream(Const.LEN_START_BYTE);
+        bytes = this.#stream.Read(Const.LEN_START_BYTE);
         if (bytes.length < 1 || bytes[0] != Const.START_BYTE) {
             throw new Error(`启动字节不是${Const.START_BYTE}，不是合法的IEC-60870-5-104报文。`);
         }
 
         // Read & check length of APDU
-        bytes = this.#readByteStream(Const.LEN_APDU_LENGTH);
+        bytes = this.#stream.Read(Const.LEN_APDU_LENGTH);
         this.#apduLength = bytes.toUInt();
-        if (this.#rawBytes.length != this.ApduLength + Const.LEN_START_BYTE + Const.LEN_APDU_LENGTH) {
+        if (this.#stream.Length != this.ApduLength + Const.LEN_START_BYTE + Const.LEN_APDU_LENGTH) {
             throw new Error("APDU长度与实际不符。");
         }
 
         // Read Control Fields
-        bytes = this.#readByteStream(Const.LEN_CF);
+        bytes = this.#stream.Read(Const.LEN_CF);
         this.#controlField = this.#parseControlField(bytes);
 
         if (this.FrameFormat == "I-Format") {
@@ -144,7 +134,7 @@ const Iec104Packet = class {
      * @author Tsccai
      * @date 2023-12-06
      * @param {Array} bytes The Control Field byte array
-     */    
+     */
     #parseControlField(bytes) {
         // Check flag1 and flag2, the 1st and 3rd byte
         let flag1 = bytes[0] & Const.MASK_CF;
@@ -174,24 +164,24 @@ const Iec104Packet = class {
      * @description Parse the ASDU of the packet, invoke in #parsePacket()
      * @author Tsccai
      * @date 2023-12-06
-     */    
+     */
     #parseAsdu() {
         let result = {};
         result.toString = function () { return result }
 
         // Read Type identification
-        let bytes = this.#readByteStream(Const.LEN_ASDU_TYPE);
+        let bytes = this.#stream.Read(Const.LEN_ASDU_TYPE);
         result.Type = {
-            RawBytes: bytes, Description: InformationObjectFactory.getDescription(bytes)
+            RawBytes: bytes, Description: InformationObjectFactory.GetDescription(bytes)
         };
 
 
-        bytes = this.#readByteStream(Const.LEN_NUM_OF_OBJECT);
+        bytes = this.#stream.Read(Const.LEN_NUM_OF_OBJECT);
         let tmp = bytes.toUInt();
         result.NumberOfObjects = tmp & Const.MASK_NUM_OF_OBJECT;
         result.IsSequence = (tmp & ~Const.MASK_NUM_OF_OBJECT) != 0;
 
-        bytes = this.#readByteStream(this.#LEN_COT);
+        bytes = this.#stream.Read(this.#LEN_COT);
         tmp = [bytes.shift()].toUInt();
         result.CauseOfTransfer = { Description: Enums.CotType.toString(tmp & Const.MASK_COT) };
 
@@ -202,42 +192,39 @@ const Iec104Packet = class {
             result.CauseOfTransfer.OriginatorAddr = bytes.toUInt();
         }
 
-        bytes = this.#readByteStream(this.#LEN_ASDU_ADDR);
+        bytes = this.#stream.Read(this.#LEN_ASDU_ADDR);
         result.AsduAddr = bytes.toUInt();
         result.InformationObjectAddr = [];
         result.InformationObjects = [];
-        let tid = result.Type.RawBytes.toUInt();
-        if (result.IsSequence) {
-            bytes = this.#readByteStream(this.#LEN_IO_ADDR);
-            result.InformationObjectAddr.push(bytes.toUInt());
+        const tid = result.Type.RawBytes.toUInt();
 
+
+
+        if (result.IsSequence) {
+            result.InformationObjectAddr.push(this.#stream.Read(this.#LEN_IO_ADDR).toUInt());
             // Follow with Information Objects without address 
             for (let i = 0; i < result.NumberOfObjects; i++) {
-
-                let len = InformationObject[tid].ByteLength;
-                bytes = this.#readByteStream(len);
-                result.InformationObjects.push(
-                    InformationObjectFactory.createInstance(tid, bytes).Value
-                );
+                const obj = this.#createInformationObject(tid);
+                result.InformationObjects.push(obj.Value);
             }
         }
         else {
             for (let i = 0; i < result.NumberOfObjects; i++) {
-                let len = InformationObject[tid].ByteLength;
-                bytes = this.#readByteStream(this.#LEN_IO_ADDR);
-                result.InformationObjectAddr.push(bytes.toUInt());
-                bytes = this.#readByteStream(len);
-                // do sth
-                result.InformationObjects.push(
-                    InformationObjectFactory.createInstance(tid, bytes).Value
-                );
+                result.InformationObjectAddr.push(this.#stream.Read(this.#LEN_IO_ADDR).toUInt());
+                const obj = this.#createInformationObject(tid);
+                result.InformationObjects.push(obj.Value);
             }
         }
-
-
         return result;
     }
+    #createInformationObject(tid) {
+        const len = InformationObject[tid].ByteLength;
+
+        const infoObj = InformationObjectFactory.CreateInstance(tid, this.#stream);
+        return infoObj;
+    }
 }
+
 
 
 module.exports = Iec104Packet;
