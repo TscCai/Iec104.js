@@ -161,7 +161,7 @@ const QDS = class {
 
 const QDP = class extends BaseTypeQ {
     static ByteLength = 1;
-    static Name='QDP';
+    static Name = 'QDP';
     #mask_reserved = 0x07;
     #mask_effect_invalid = 0x08;
 
@@ -190,7 +190,7 @@ const QDP = class extends BaseTypeQ {
 // No.5
 const VTI = class {
     static ByteLength = 1;
-    static Name='VTI';
+    static Name = 'VTI';
     Value = 0;
     Transient = false;
     RawValue = 0;
@@ -214,7 +214,7 @@ const VTI = class {
 
 const NVA = class {
     static ByteLength = 2;
-    static Name='NVA';
+    static Name = 'NVA';
     Value = 0;
 
     get RealValue() { return this.Value / this.FullValue; }
@@ -254,7 +254,7 @@ const SVA = class {
 }
 
 const R32 = class {
-    static Name='R32';
+    static Name = 'R32';
     static ByteLength = 4;
 
     Value = 0;
@@ -286,7 +286,7 @@ const R32 = class {
 
 const BCR = class {
     static ByteLength = 5;
-    static Name='BCR';
+    static Name = 'BCR';
     Value = {};
 
     #mask_sequence = 0xF8;
@@ -314,7 +314,7 @@ const BCR = class {
 
 // No.10
 const SEP = class extends BaseTypeQ {
-    static Name='SEP';
+    static Name = 'SEP';
     static ByteLength = 1;
     #mask_value = 0x03;
     #mask_reserved = 0x04;
@@ -347,7 +347,7 @@ const SEP = class extends BaseTypeQ {
 
 const SPE = class {
     static ByteLength = 1;
-    static Name='SPE';
+    static Name = 'SPE';
     GeneralStart = false;
     PhaseAStart = false;
     PhaseBStart = false;
@@ -384,7 +384,7 @@ const SPE = class {
 
 const OCI = class {
     static ByteLength = 1;
-    static Name='OCI';
+    static Name = 'OCI';
     GeneralOut = false;
     PhaseAOut = false;
     PhaseBOut = false;
@@ -415,7 +415,7 @@ const OCI = class {
 
 const BSI = class {
     static ByteLength = 4;
-    static Name='BSI';
+    static Name = 'BSI';
     RawValue = 0;
     Value = "";
     constructor(bytes) {
@@ -432,7 +432,7 @@ const BSI = class {
 
 const FBP = class {
     static ByteLength = 2;
-    static Name='FBP';
+    static Name = 'FBP';
     RawValue = 0x55AA;
     Value = 0x55AA;
     constructor(bytes) {
@@ -454,7 +454,7 @@ const FBP = class {
 //No.15
 const SCO = class {
     static ByteLength = 1;
-    static Name='SCO';
+    static Name = 'SCO';
     RawValue = 0;
     ToClose = false;
     ToOpen = !this.ToClose;
@@ -486,7 +486,7 @@ const SCO = class {
 
 const DCO = class {
     static ByteLength = 1;
-    static Name='DCO';
+    static Name = 'DCO';
     RawValue = 0;
     #mask_cmd = 0x03;
     ToClose = false;
@@ -526,7 +526,7 @@ const DCO = class {
 }
 const RCO = class {
     static ByteLength = 1;
-    static Name='RCO';
+    static Name = 'RCO';
     RawValue = 0;
     #mask_cmd = 0x03;
     UpShift = false;
@@ -566,7 +566,7 @@ const RCO = class {
 }
 const CP16Time2a = class {
     static ByteLength = 2;
-    static Name='CP16Time2a';
+    static Name = 'CP16Time2a';
     Millisecond = 0;
     constructor(bytes) {
         if (bytes != undefined) {
@@ -589,7 +589,7 @@ const CP16Time2a = class {
 
 const CP24Time2a = class extends CP16Time2a {
     static ByteLength = 3;
-    static Name='CP24Time2a';
+    static Name = 'CP24Time2a';
     Minute = 0;
     #mask_minute = 0x3F;
 
@@ -631,7 +631,7 @@ const CP24Time2a = class extends CP16Time2a {
 
 const CP56Time2a = class extends CP24Time2a {
     static ByteLength = 7;
-    static Name='CP56Time2a';
+    static Name = 'CP56Time2a';
 
     Hour = 0;
     #mask_hour = 0x1F;
@@ -697,7 +697,7 @@ const CP56Time2a = class extends CP24Time2a {
 
 const COI = class {
     static ByteLength = 1;
-    static Name='COI';
+    static Name = 'COI';
     #mask_val = 0xFE;
     #mask_init = 0x01;
     InitReason = "";
@@ -726,7 +726,7 @@ const COI = class {
 
 const QOI = class {
     static ByteLength = 1;
-    static Name='QOI';
+    static Name = 'QOI';
     Interrogation = "";
     #group_offset = -20;
     constructor(bytes) {
@@ -749,7 +749,7 @@ const QOI = class {
 
 const QCC = class {
     static ByteLength = 1;
-    static Name='QCC';
+    static Name = 'QCC';
     #mask_req = 0xFC;
     #mask_freeze = 0x03;
     Request = 0;
@@ -796,7 +796,7 @@ const QCC = class {
 
 const QPM = class {
     static ByteLength = 1;
-    static Name='QPM';
+    static Name = 'QPM';
     #mask_kpa = 0x3F;
     #mask_lpc = 0x40;
     #mask_pop = 0x80;
@@ -838,7 +838,7 @@ const QPM = class {
 // No.25
 const QPA = class {
     static ByteLength = 1;
-    static Name='QPA';
+    static Name = 'QPA';
     Value = 0;
     constructor(bytes) {
         if (bytes != undefined) {
@@ -869,7 +869,7 @@ const QPA = class {
     }
 }
 const QOC = class {
-    static Name='QOC';
+    static Name = 'QOC';
     #mask_s_or_e = 0x80;
     #mask_qu = 0x7C;
 
@@ -911,8 +911,8 @@ const QOC = class {
 
 
 }
-const QRP = class {
-    static Name='QRP';
+const GRP = class {
+    static Name = 'GRP';
     static ByteLength = 1;
     Value = 0;
     constructor(bytes) {
@@ -943,7 +943,7 @@ const QRP = class {
     }
 }
 const FRQ = class {
-    static Name='FRQ';
+    static Name = 'FRQ';
     static ByteLength = 1;
     #mask_ready = 0x80;
     #mask_reserved = 0x7F;
@@ -979,7 +979,7 @@ const FRQ = class {
     }
 }
 const SRQ = class {
-    static Name='SRQ';
+    static Name = 'SRQ';
     static ByteLength = 1;
     #mask_ready = 0x80;
     #mask_reserved = 0x7F;
@@ -1017,7 +1017,7 @@ const SRQ = class {
 
 // No.30
 const SCQ = class {
-    static Name='SCQ';
+    static Name = 'SCQ';
     static ByteLength = 1;
     #mask_select = 0x0F;
 
@@ -1069,7 +1069,7 @@ const SCQ = class {
     }
 }
 const LSQ = class {
-    static Name='LSQ';
+    static Name = 'LSQ';
     static ByteLength = 1;
     RawValue = 0;
     Value = '';
@@ -1101,7 +1101,7 @@ const LSQ = class {
     }
 }
 const AFQ = class {
-    static Name='AFQ';
+    static Name = 'AFQ';
     static ByteLength = 1;
     #mask_low = 0x0F;
 
@@ -1150,7 +1150,7 @@ const AFQ = class {
     }
 }
 const NOF = class {
-    static Name='NOF';
+    static Name = 'NOF';
     ByteLength = 2;
     RawValue = 0;
     Value = '';
@@ -1168,7 +1168,7 @@ const NOF = class {
     }
 }
 const NOS = class {
-    static Name='NOS';
+    static Name = 'NOS';
     static ByteLength = 1;
     RawValue = 0;
     Value = '';
@@ -1187,7 +1187,7 @@ const NOS = class {
 
 // No.35
 const LOF = class {
-    static Name='LOF';
+    static Name = 'LOF';
     static ByteLength = 3;
     RawValue = 0;
     Value = '';
@@ -1205,10 +1205,10 @@ const LOF = class {
     }
 }
 const LOS = class {
-    static Name='LOS';
+    static Name = 'LOS';
     static ByteLength = 1;
     RawValue = 0;
-    Value = '';
+    Value = 0;
     constructor(bytes) {
         if (bytes != undefined) {
             this.RawValue = extractRawValue(bytes);
@@ -1222,8 +1222,27 @@ const LOS = class {
         return `{Length of section:${this.Value}}`;
     }
 }
+const COS = class {
+    static Name = 'COS';
+    ByteLength = -1;
+    RawValue = [];
+    Value = [];
+    constructor(bytes, length) {
+        if (bytes != undefined && Array.isArray(bytes)) {
+            this.RawValue = bytes;
+            this.Value = bytes;
+            this.ByteLength = bytes.length;
+        }
+        if (length != undefined && length > 0) {
+            this.RawValue = new Array(length);
+            this.Value = this.RawValue;
+        }
+
+
+    }
+}
 const CHS = class {
-    static Name='CHS';
+    static Name = 'CHS';
     static ByteLength = 1;
     RawValue = 0;
     Value = '';
@@ -1241,21 +1260,21 @@ const CHS = class {
     }
 }
 const SOF = class {
-    static Name='SOF';
+    static Name = 'SOF';
     static ByteLength = 1;
     constructor(bytes) {
         throw new Error('not implement');
     }
 }
 const QOS = class {
-    static Name='QOS';
+    static Name = 'QOS';
     static ByteLength = 1;
     constructor(bytes) {
         throw new Error('not implement');
     }
 }
 const SCD = class {
-    static Name='SCD';
+    static Name = 'SCD';
     static ByteLength = 1;
     constructor(bytes) {
         throw new Error('not implement');
@@ -1265,6 +1284,6 @@ const SCD = class {
 module.exports = {
     SIQ, DIQ, QDS, QDP, VTI, NVA, SVA, R32, BCR, SEP,
     SPE, OCI, BSI, FBP, SCO, DCO, RCO, CP56Time2a, CP24Time2a, CP16Time2a,
-    COI, QUI: QOI, QCC, QPM, QPA, QOC, QRP, FRQ, SRQ, SCQ,
+    COI, QOI, QCC, QPM, QPA, QOC, GRP, FRQ, SRQ, SCQ,
     LSQ, AFQ, NOF, NOS, LOF, LOS, CHS, SOF, QOS, SCD
 }

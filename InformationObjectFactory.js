@@ -1,6 +1,5 @@
 const AsduDict = require('./data-types/asdu-type');
 const InformationObjectFactory = class {
-
     static createInstance(tid, bytes) {
         return Reflect.construct(AsduDict[tid], [bytes]);
     }
