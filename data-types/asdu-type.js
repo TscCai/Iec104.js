@@ -14,8 +14,11 @@ const BaseInformationObject = class {
 
     Value = {};
     #stream = { ptr: 0, bytes: [] };
-    constructor(bytes) {
+    constructor(bytes, structure) {
         this.#stream.bytes = bytes;
+        if (structure != undefined) {
+            this.initObject(structure);
+        }
     }
     static getByteLength(structure) {
         let result = 0;
@@ -52,15 +55,14 @@ const M_SP_NA_1 = class extends BaseInformationObject {
     static Description = 'Single-point information';
     static InformationObjectStructure = [BaseType.SIQ];
     constructor(bytes, structure = M_SP_NA_1.InformationObjectStructure) {
-        super(bytes);
-        this.initObject(structure);
+        super(bytes, structure);
     }
 }
 
 const M_SP_TA_1 = class extends M_SP_NA_1 {
     static TID = 0x02;
     static Description = 'Single-point information with time tag';
-    static InformationObjectStructure = [...super.M_SP_NA_1.InformationObjectStructure, BaseType.CP24Time2a];
+    static InformationObjectStructure = [...super.InformationObjectStructure, BaseType.CP24Time2a];
     constructor(bytes) {
         super(bytes, M_SP_NA_1.InformationObjectStructure);
     }
@@ -71,8 +73,7 @@ const M_DP_NA_1 = class extends BaseInformationObject {
     static Description = 'Double-point information'
     static InformationObjectStructure = [BaseType.DIQ];
     constructor(bytes, structure = M_DP_NA_1.InformationObjectStructure) {
-        super(bytes);
-        this.initObject(structure);
+        super(bytes, structure);
     }
 }
 
@@ -89,8 +90,7 @@ const M_ST_NA_1 = class extends BaseInformationObject {
     static Description = "Step position information";
     static InformationObjectStructure = [BaseType.VTI, BaseType.QDS];
     constructor(bytes, structure = M_ST_NA_1.InformationObjectStructure) {
-        super(bytes);
-        this.initObject(structure);
+        super(bytes, structure);
     }
 }
 const M_ST_TA_1 = class extends M_ST_NA_1 {
@@ -106,8 +106,7 @@ const M_BO_NA_1 = class extends BaseInformationObject {
     static Description = "Bitstring of 32 bit with quality";
     static InformationObjectStructure = [BaseType.BSI, BaseType.QDS];
     constructor(bytes, structure = M_BO_NA_1.InformationObjectStructure) {
-        super(bytes);
-        this.initObject(structure);
+        super(bytes, structure);
     }
 }
 const M_BO_TA_1 = class extends M_BO_NA_1 {
@@ -124,8 +123,7 @@ const M_ME_NA_1 = class extends BaseInformationObject {
     static Description = "Measured value, normalised value";
     static InformationObjectStructure = [BaseType.NVA, BaseType.QDS];
     constructor(bytes, structure = M_ME_NA_1.InformationObjectStructure) {
-        super(bytes);
-        this.initObject(structure);
+        super(bytes, structure);
     }
 }
 const M_ME_TA_1 = class extends M_ME_NA_1 {
@@ -141,8 +139,7 @@ const M_ME_NB_1 = class extends BaseInformationObject {
     static InformationObjectStructure = [BaseType.SVA, BaseType.QDS];
     static Description = "Measured value, scaled value";
     constructor(bytes, structure = M_ME_NB_1.InformationObjectStructure) {
-        super(bytes);
-        this.initObject(structure);
+        super(bytes, structure);
     }
 }
 const M_ME_TB_1 = class extends M_ME_NB_1 {
@@ -156,75 +153,77 @@ const M_ME_TB_1 = class extends M_ME_NB_1 {
 const M_ME_NC_1 = class extends BaseInformationObject {
     static TID = 0x0D;
     static Description = "Measured value, short floating point number";
-    static ByteLength = BaseType.R32.ByteLength + BaseType.QDS.ByteLength;
-    constructor(bytes) {
-        console.log("not implement");
+    static InformationObjectStructure = [BaseType.R32, BaseType.QDS];
+    constructor(bytes, structure = M_ME_NC_1.InformationObjectStructure) {
+        super(bytes, structure);
     }
 }
-const M_ME_TC_1 = class extends BaseInformationObject {
+const M_ME_TC_1 = class extends M_ME_NC_1 {
     static TID = 0x0E;
     static Description = "Measured value, short floating point number with time tag";
-    static ByteLength = M_ME_NC_1.ByteLength + 3;
+    static InformationObjectStructure = [...super.InformationObjectStructure, BaseType.CP24Time2a];
     constructor(bytes) {
-        console.log("not implement");
+        super(bytes, M_ME_TC_1.InformationObjectStructure);
     }
 }
 const M_IT_NA_1 = class extends BaseInformationObject {
     static TID = 0x0F;
     static Description = "Integrated totals";
-    static ByteLength = 5;
-    constructor(bytes) {
-        console.log("not implement");
+    static InformationObjectStructure = [BaseType.BCR];
+    constructor(bytes, structure = M_IT_NA_1.InformationObjectStructure) {
+        super(bytes, structure);
     }
 }
-const M_IT_TA_1 = class extends BaseInformationObject {
+const M_IT_TA_1 = class extends M_IT_NA_1 {
     static TID = 0x10;
     static Description = "Integrated totals with time tag";
-    static ByteLength = M_IT_NA_1.ByteLength + 3;
+    static InformationObjectStructure = [...super.InformationObjectStructure, BaseType.CP24Time2a];
     constructor(bytes) {
-        console.log("not implement");
+        super(bytes, M_IT_TA_1.InformationObjectStructure);
     }
 }
 const M_EP_TA_1 = class extends BaseInformationObject {
     static TID = 0x11;
     static Description = "Event of protection equipment with time tag";
-    static ByteLength = 6;
-    constructor(bytes) {
-        console.log("not implement");
+    static InformationObjectStructure = [BaseType.SEP, BaseType.CP16Time2a, BaseType.CP24Time2a];
+    constructor(bytes, structure = M_EP_TA_1.InformationObjectStructure) {
+        super(bytes, structure);
     }
 }
 const M_EP_TB_1 = class extends BaseInformationObject {
     static TID = 0x12;
     static Description = "Packed start events of protection equipment with time tag";
-    static ByteLength = 7;
-    constructor(bytes) {
-        console.log("not implement");
+    static InformationObjectStructure = [BaseType.SPE, BaseType.QDP, BaseType.CP16Time2a, BaseType.CP24Time2a]
+    constructor(bytes, structure = M_EP_TB_1.InformationObjectStructure) {
+        super(bytes, structure);
     }
 }
 const M_EP_TC_1 = class extends BaseInformationObject {
     static TID = 0x13;
     static Description = "Packed output circuit information of protection equipment with time tag";
-    static ByteLength = 7;
-    constructor(bytes) {
-        console.log("not implement");
+    static InformationObjectStructure = [BaseType.OCI, BaseType.QDP, BaseType.CP16Time2a, BaseType.CP24Time2a];
+    constructor(bytes, structure = M_EP_TC_1.InformationObjectStructure) {
+        super(bytes, structure);
     }
 }
+
 const M_PS_NA_1 = class extends BaseInformationObject {
     static TID = 0x14;
     static Description = "Packed single point information with status change detection";
-    static ByteLength = 4;
+    static InformationObjectStructure = [BaseType.SCD, BaseType.QDS];
     constructor(bytes) {
-        console.log("not implement");
+        super(bytes, M_PS_NA_1.InformationObjectStructure);
     }
 }
 const M_ME_ND_1 = class extends BaseInformationObject {
     static TID = 0x15;
     static Description = "Measured value, normalized value without quality descriptor";
-    static ByteLength = BaseType.NVA.ByteLength;
+    static InformationObjectStructure = [BaseType.NVA];
     constructor(bytes) {
-        this.Value = new BaseType.NVA(bytes);
+        super(bytes, M_ME_ND_1.InformationObjectStructure);
     }
 }
+// TODO:Continue from here  2024.02.02
 const M_SP_TB_1 = class extends BaseInformationObject {
     static TID = 0x1E;
     static Description = "Single-point information with time tag CP56Time2a";
