@@ -22,6 +22,7 @@ try {
     // packet.Asdu = { dog: "Spike" }
     // console.log(packet.Asdu);
     console.log(packet.toString())
+    console.log(JSON.stringify(packet.ControlField))
 
 
 }

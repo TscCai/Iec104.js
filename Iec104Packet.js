@@ -93,7 +93,13 @@ const Iec104Packet = class {
             `APDU Length: ${this.ApduLength}, Frame Format: ${this.FrameFormat}\n` +
             `CF: {${this.ControlField}}\n` +
             `ASDU:{ \n` +
+            `    TID: ${this.Asdu.Type.Description}\n` +
+            `    Number of Objects: ${this.Asdu.NumberOfObjects}\n` +
+            `    Is Sequence: ${this.Asdu.IsSequence}\n` +
             `    COT: ${this.Asdu.CauseOfTransfer.Description} \n` +
+            `    ASDU Addr: ${this.Asdu.AsduAddr} \n` +
+            `    Information Object Addr: ${this.Asdu.InformationObjectAddr} \n` +
+            `    Information Object: ${this.Asdu.InformationObjects} \n` +
             `}`
         return str;
     }
