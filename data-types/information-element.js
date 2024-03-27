@@ -128,7 +128,7 @@ const DIQ = class extends BaseTypeQ {
 const QDS = class {
     static ByteLength = 1;
     static Name = "QDS";
-    static Description = '';
+    static Description = '品质描述词';
     RawValue = 0;
     Invalid = false;
     NotTopical = false;
@@ -156,6 +156,27 @@ const QDS = class {
             this.ReservedBit = this.RawValue & this.#mask_reserved;
             this.Overflow = Boolean(this.RawValue & this.#mask_overflow);
         }
+    }
+
+    toString() {
+        let result = `${QDS.Description}:`;
+        let flag = false;
+        for (let key in this) {
+            if (typeof (this[key]) === 'function') {
+                continue;
+            }
+            if (this[key]) {
+                result += this[key] + ', ';
+                flag = true;
+            }
+        }
+        if (!flag) {
+            result = result.substring(0, result.length) + "正常";
+        }
+        else {
+            result = result.substring(0, result.length - 2);
+        }
+        return result;
     }
 }
 
@@ -239,17 +260,26 @@ const NVA = class {
 
 const SVA = class {
     static Name = "SVA";
-    static Description = '';
+    static Description = '标度化值';
     static ByteLength = 2;
+    RawValue = '';
     Value = 0;
     constructor(bytes) {
         if (bytes != undefined) {
             this.Value = bytes.toInt();
+            this.RawValue = bytes;
             checkConstructArgs(this.Value, SVA.ByteLength);
         }
     }
     toBytes() {
         throw new Error("Not Implement.");
+    }
+    toString() {
+        let raw = '';
+        for (let i of this.RawValue) {
+            raw += i.toString(16).toUpperCase();
+        }
+        return `${SVA.Description}: ${this.Value}`;
     }
 }
 

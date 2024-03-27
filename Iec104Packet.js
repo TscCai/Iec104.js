@@ -91,15 +91,15 @@ const Iec104Packet = class {
     toString() {
         let str =
             `APDU Length: ${this.ApduLength}, Frame Format: ${this.FrameFormat}\n` +
-            `CF: {${this.ControlField}}\n` +
+            `CF: {${this.ControlField.toString()}}\n` +
             `ASDU:{ \n` +
             `    TID: ${this.Asdu.Type.Description}\n` +
             `    Number of Objects: ${this.Asdu.NumberOfObjects}\n` +
             `    Is Sequence: ${this.Asdu.IsSequence}\n` +
             `    COT: ${this.Asdu.CauseOfTransfer.Description} \n` +
             `    ASDU Addr: ${this.Asdu.AsduAddr} \n` +
-            `    Information Object Addr: ${this.Asdu.InformationObjectAddr} \n` +
-            `    Information Object: ${this.Asdu.InformationObjects} \n` +
+            `    Information Object Addr: [${this.Asdu.InformationObjectAddr}] \n` +
+            `    Information Object: [${this.Asdu.InformationObjects}] \n` +
             `}`
         return str;
     }
@@ -142,6 +142,7 @@ const Iec104Packet = class {
      * @param {Array} bytes The Control Field byte array
      */
     #parseControlField(bytes) {
+        let cf={};
         // Check flag1 and flag2, the 1st and 3rd byte
         let flag1 = bytes[0] & Const.MASK_CF;
         let flag2 = bytes[2] & (Const.MASK_CF >> 1);
@@ -150,20 +151,34 @@ const Iec104Packet = class {
             this.#frameFormat = "I-Format";
             let sendSqNum = bytes.readBytes(2, 0).toUInt() >> 1;
             let receiveSqNum = bytes.readBytes(2, 2).toUInt() >> 1;
-            return { SendSqNum: sendSqNum, ReceiveSqNum: receiveSqNum };
+
+            cf= { SendSqNum: sendSqNum, ReceiveSqNum: receiveSqNum };
+            
         }
         else if (flag1 == 1 && flag2 == 0 && bytes[0] == 1 && bytes[1] == 0) {
             this.#frameFormat = "S-Format";
             let receiveSqNum = bytes.readBytes(2, 2).toUInt() >> 1;
-            return { ReceiveSqNum: receiveSqNum };
+            cf= { ReceiveSqNum: receiveSqNum };
+
         }
         else if (flag1 == 3 && bytes[1] * bytes[2] * bytes[3] == 0) {
             this.#frameFormat = "U-Format";
-            return { Sigalling: Enums.UFormatSignalling.toString(bytes[0]) };
+            cf={ Sigalling: Enums.UFormatSignalling.toString(bytes[0]) };
         }
         else {
             throw new Error("未知的帧格式。");
         }
+        cf.toString=function(){
+            let result ='';
+            for(let key in this){
+                if(typeof(this[key])==='function'){
+                    continue;
+                }
+                result+=`${key}: ${this[key]}, `;
+            }
+            return result.substring(0,result.length-2);
+        }
+        return cf;
     }
 
     /**

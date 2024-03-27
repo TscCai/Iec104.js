@@ -33,6 +33,17 @@ const BaseInformationObject = class {
             const args = [this.#stream.Read(i.ByteLength)];
             this.Value[i.Name] = Reflect.construct(i, args);
         }
+        this.Value.toString = () => {
+            let result = '';
+            for (let key in this.Value) {
+                if (typeof (this.Value[key]) === 'function') {
+                    continue;
+                }
+                result += `${this.Value[key].toString()}, `;
+            }
+            result = result.substring(0, result.length - 2);
+            return `{${result}}`;
+        }
     }
 }
 
@@ -381,7 +392,7 @@ const F_SG_NA_1 = class extends BaseInformationObject {
     static TID = 0x7D;
     static Description = "Segment";
     static InformationObjectStructure = [InfoEle.NOF, InfoEle.NOS, InfoEle.LOS];
-   
+
     constructor(stream) {
         let tmp = {};
         for (const i of F_SG_NA_1.InformationObjectStructure) {
