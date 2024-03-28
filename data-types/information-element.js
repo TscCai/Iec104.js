@@ -1,6 +1,9 @@
 //require('../bytes-ext')
 
 function checkConstructArgs(value, length = 1) {
+    if(Array.isArray(value) && value.length===length){
+        return true;
+    }
     if (!Number.isInteger(value) || value > (1 << (8 * length)) - 1 || value < 0) {
         throw new Error(`非法的参数，参数类型应为${length * 8}位UInt`);
     }
@@ -290,8 +293,8 @@ const R32 = class {
     Value = 0;
     constructor(bytes, littleEndian = true) {
         if (bytes != undefined) {
-            let tmp = bytes.toInt();
-            checkConstructArgs(tmp, R32.ByteLength);
+            //let tmp = bytes.toInt();
+            checkConstructArgs(bytes, R32.ByteLength);
 
             // let arr = new Uint8Array(bytes);
             // let dataView = new DataView(arr.buffer);
@@ -312,6 +315,9 @@ const R32 = class {
 
         return [...dataView.buffer];
     }
+    toString(){
+        return this.Value
+    }
 }
 
 const BCR = class {
@@ -326,8 +332,8 @@ const BCR = class {
 
     constructor(bytes) {
         if (bytes != undefined) {
-            let tmp = bytes.toInt();
-            checkConstructArgs(tmp, BCR.ByteLength);
+            
+            checkConstructArgs(bytes, BCR.ByteLength);
             let count = bytes.readBytes(4, 0).toInt();
             let sequenceFlag = bytes.readBytes(5, 4).toUInt();
             let sqNum = sequenceFlag & this.#mask_sequence;
@@ -451,7 +457,7 @@ const BSI = class {
     constructor(bytes) {
         if (bytes != undefined) {
             this.RawValue = extractRawValue(bytes);
-            checkConstructArgs(this.RawValue, BSI.ByteLength);
+            checkConstructArgs(bytes, BSI.ByteLength);
             this.Value = this.RawValue.toString(2);
         }
     }
@@ -605,7 +611,6 @@ const CP16Time2a = class {
             offset += 2;
             this.Millisecond = tmp.toUInt();
         }
-
     }
     toBytes() {
         throw new Error("Not implement");
