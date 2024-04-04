@@ -920,12 +920,12 @@ const QOC = class {
     constructor(uint) {
         if (uint != undefined) {
             this.RawValue = uint;
-            this.IsSelected = Boolean(this.RawValue & this.#mask_s_or_e);
+            this.IsSelect = Boolean(this.RawValue & this.#mask_s_or_e);
             this.IsExecute = !this.IsSelect;
             this.#cmd = this.IsSelect ? "Select" : "Execute";
             this.QU = (this.RawValue & this.#mask_qu) >> 1;
             switch (this.QU) {
-                case 0: this.QUString = "No more define."; break;
+                case 0: this.QUString = "No extra definition."; break;
                 case 1: this.QUString = "Short pulse remain time."; break;
                 case 2: this.QUString = "Long pulse remain time."; break;
                 case 3: this.QUString = "Continuous output."; break;
