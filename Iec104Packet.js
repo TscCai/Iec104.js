@@ -4,6 +4,7 @@ const Enums = require('./enum');
 const Const = require('./constant');
 const InformationObject = require('./data-types/asdu-type');
 const InformationObjectFactory = require('./InformationObjectFactory');
+const I18n = require('./i18n');
 
 const Iec104Packet = class {
 
@@ -89,18 +90,22 @@ const Iec104Packet = class {
     }
 
     toString() {
+
         let str =
-            `APDU Length: ${this.ApduLength}, Frame Format: ${this.FrameFormat}\n` +
-            `CF: {${this.ControlField.toString()}}\n` +
-            `ASDU:{ \n` +
-            `    TID: ${this.Asdu.Type.Description}\n` +
-            `    Number of Objects: ${this.Asdu.NumberOfObjects}\n` +
-            `    Is Sequence: ${this.Asdu.IsSequence}\n` +
-            `    COT: ${this.Asdu.CauseOfTransfer.Description} \n` +
-            `    ASDU Addr: ${this.Asdu.AsduAddr} \n` +
-            `    Information Object Addr: [${this.Asdu.InformationObjectAddr}] \n` +
-            `    Information Object: [${this.Asdu.InformationObjects}] \n` +
+            `${I18n.T('APDU Length')}: ${this.ApduLength}, ${I18n.T('Frame Format')}: ${this.FrameFormat}\n` +
+            `${I18n.T('CF')}: {${this.ControlField.toString()}}\n` +
+            `${I18n.T('ASDU')}:{ \n` +
+            `    ${I18n.T('TID')}: ${this.Asdu.Type.Description}\n` +
+            `    ${I18n.T('Number of Objects')}: ${this.Asdu.NumberOfObjects}\n` +
+            `    ${I18n.T('Is Sequence')}: ${this.Asdu.IsSequence}\n` +
+            `    ${I18n.T('Is Test')}: ${this.Asdu.CauseOfTransfer.IsTest}\n` +
+            `    ${I18n.T('Is Positive')}: ${this.Asdu.CauseOfTransfer.IsPositive}\n` +
+            `    ${I18n.T('COT')}: ${this.Asdu.CauseOfTransfer.Description} \n` +
+            `    ${I18n.T('ASDU Addr')}: ${this.Asdu.AsduAddr} \n` +
+            `    ${I18n.T('Information Object Addr')}: [${this.Asdu.InformationObjectAddr}] \n` +
+            `    ${I18n.T('Information Object')}: [${this.Asdu.InformationObjects}] \n` +
             `}`
+
         return str;
     }
 
@@ -142,7 +147,7 @@ const Iec104Packet = class {
      * @param {Array} bytes The Control Field byte array
      */
     #parseControlField(bytes) {
-        let cf={};
+        let cf = {};
         // Check flag1 and flag2, the 1st and 3rd byte
         let flag1 = bytes[0] & Const.MASK_CF;
         let flag2 = bytes[2] & (Const.MASK_CF >> 1);
@@ -152,31 +157,31 @@ const Iec104Packet = class {
             let sendSqNum = bytes.readBytes(2, 0).toUInt() >> 1;
             let receiveSqNum = bytes.readBytes(2, 2).toUInt() >> 1;
 
-            cf= { SendSqNum: sendSqNum, ReceiveSqNum: receiveSqNum };
-            
+            cf = { SendSqNum: sendSqNum, ReceiveSqNum: receiveSqNum };
+
         }
         else if (flag1 == 1 && flag2 == 0 && bytes[0] == 1 && bytes[1] == 0) {
             this.#frameFormat = "S-Format";
             let receiveSqNum = bytes.readBytes(2, 2).toUInt() >> 1;
-            cf= { ReceiveSqNum: receiveSqNum };
+            cf = { ReceiveSqNum: receiveSqNum };
 
         }
         else if (flag1 == 3 && bytes[1] * bytes[2] * bytes[3] == 0) {
             this.#frameFormat = "U-Format";
-            cf={ Sigalling: Enums.UFormatSignalling.toString(bytes[0]) };
+            cf = { Sigalling: Enums.UFormatSignalling.toString(bytes[0]) };
         }
         else {
             throw new Error("未知的帧格式。");
         }
-        cf.toString=function(){
-            let result ='';
-            for(let key in this){
-                if(typeof(this[key])==='function'){
+        cf.toString = function () {
+            let result = '';
+            for (let key in this) {
+                if (typeof (this[key]) === 'function') {
                     continue;
                 }
-                result+=`${key}: ${this[key]}, `;
+                result += `${key}: ${this[key]}, `;
             }
-            return result.substring(0,result.length-2);
+            return result.substring(0, result.length - 2);
         }
         return cf;
     }
@@ -208,7 +213,7 @@ const Iec104Packet = class {
 
 
         result.CauseOfTransfer.IsTest = (tmp & (1 << 7)) > 0;
-        result.CauseOfTransfer.IsPositive = (tmp & (1 << 6)) > 0;
+        result.CauseOfTransfer.IsPositive = (tmp & (1 << 6)) === 0;
         if (this.#LEN_COT == 2) {
             result.CauseOfTransfer.OriginatorAddr = bytes.toUInt();
         }

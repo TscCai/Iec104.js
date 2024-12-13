@@ -7,10 +7,34 @@
  * 
  */
 String.prototype.toBytes = function () {
-    let result = this.split(' ');
-    for (let i = 0; i < result.length; i++) {
-        result[i] = parseInt(`0x${result[i]}`);
+    raw = this.replaceAll(' ', '');
+    result = [];
+    if (raw.length % 2 !== 0) {
+        throw new Error('Uncompleted byte string.');
     }
+    for (let i = 0; i < raw.length; i += 2) {
+        result.push(parseInt(`0x${raw[i]}${raw[i + 1]}`));
+    }
+
+    // let result = this.split(' ');
+    // if (result[result.length - 1] === '') {
+    //     result.pop();
+    // }
+    // for (let i = 0; i < result.length; i++) {
+    //     result[i] = parseInt(`0x${result[i]}`);
+    // }
+    return result;
+}
+
+Array.prototype.toHex = function (delimiter = ' ') {
+    let result = '';
+    for (let i of this) {
+        if (i > 255 || i < 0) {
+            throw new Error('Unexpected element in bytes array.')
+        }
+        result += i.toString(16).toUpperCase().padStart(2, '0') + delimiter;
+    }
+    result = result.substring(0, result.length - 1 * delimiter.length);
     return result;
 }
 

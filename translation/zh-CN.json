@@ -1,0 +1,14 @@
+{
+    "APDU Length":"APDU长度",
+    "Frame Format":"帧格式",
+    "CF":"控制域",
+    "TID":"类型标识",
+    "Number of Objects":"信息对象数量",
+    "Is Sequence":"序列",
+    "Is Test":"测试",
+    "Is Positive":"肯定/否定响应",
+    "COT":"传输原因",
+    "ASDU Addr":"ASDU地址",
+    "Information Object Addr":"信息对象地址",
+    "Information Object":"信息对象"
+}
