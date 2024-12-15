@@ -92,18 +92,18 @@ const Iec104Packet = class {
     toString() {
 
         let str =
-            `${I18n.T('APDU Length')}: ${this.ApduLength}, ${I18n.T('Frame Format')}: ${this.FrameFormat}\n` +
-            `${I18n.T('CF')}: {${this.ControlField.toString()}}\n` +
-            `${I18n.T('ASDU')}:{ \n` +
-            `    ${I18n.T('TID')}: ${this.Asdu.Type.Description}\n` +
-            `    ${I18n.T('Number of Objects')}: ${this.Asdu.NumberOfObjects}\n` +
-            `    ${I18n.T('Is Sequence')}: ${this.Asdu.IsSequence}\n` +
-            `    ${I18n.T('Is Test')}: ${this.Asdu.CauseOfTransfer.IsTest}\n` +
-            `    ${I18n.T('Is Positive')}: ${this.Asdu.CauseOfTransfer.IsPositive}\n` +
-            `    ${I18n.T('COT')}: ${this.Asdu.CauseOfTransfer.Description} \n` +
-            `    ${I18n.T('ASDU Addr')}: ${this.Asdu.AsduAddr} \n` +
-            `    ${I18n.T('Information Object Addr')}: [${this.Asdu.InformationObjectAddr}] \n` +
-            `    ${I18n.T('Information Object')}: [${this.Asdu.InformationObjects}] \n` +
+            `${I18n('APDU Length')}: ${this.ApduLength}, ${I18n('Frame Format')}: ${this.FrameFormat}\n` +
+            `${I18n('CF')}: {${this.ControlField.toString()}}\n` +
+            `${I18n('ASDU')}:{ \n` +
+            `    ${I18n('TID')}: ${this.Asdu.Type.Description}\n` +
+            `    ${I18n('Number of Objects')}: ${this.Asdu.NumberOfObjects}\n` +
+            `    ${I18n('Is Sequence')}: ${this.Asdu.IsSequence}\n` +
+            `    ${I18n('Is Test')}: ${this.Asdu.CauseOfTransfer.IsTest}\n` +
+            `    ${I18n('Is Positive')}: ${this.Asdu.CauseOfTransfer.IsPositive}\n` +
+            `    ${I18n('COT')}: ${this.Asdu.CauseOfTransfer.Description} \n` +
+            `    ${I18n('ASDU Addr')}: ${this.Asdu.AsduAddr} \n` +
+            `    ${I18n('Information Object Addr')}: [${this.Asdu.InformationObjectAddr}] \n` +
+            `    ${I18n('Information Object')}: [${this.Asdu.InformationObjects}] \n` +
             `}`
 
         return str;
